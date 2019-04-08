@@ -62,11 +62,9 @@ const char* password = easyPass[randNumber];
 const char* ssid = numberAdd[randNumber];
  switch(level){
   case 0:
-  
-  WiFi.softAP('ChickenEasy'+ssid, password);
-//const char* APessid = ('ChickenEasy', ChickenNumber);
- Serial.print("Setting soft-AP ... ");
- Serial.println(WiFi.softAP("ESPsoftAP_01", "pass-to-soft-AP") ? "Ready" : "Failed!");
+ Serial.print("Setting soft-AP with ");
+  Serial.print(ChickenNumber);
+ Serial.println(WiFi.softAP('ChickenEasy'+ssid, password) ? "Ready" : "Failed!");
     // statements
     break;
   case 1:
@@ -119,6 +117,7 @@ void setup() {
   pinMode(LED_BUILTIN, OUTPUT);     // Initialize the LED_BUILTIN pin as an output to turn it the hell off
   digitalWrite(LED_BUILTIN, HIGH);  // onboard LED OFF get the heck out
   randomSeed(analogRead(0));
+  createBird();
   }
 
 void loop() { // Testing here
