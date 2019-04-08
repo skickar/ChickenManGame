@@ -21,6 +21,25 @@ The Chicken Man game consists of two elements, a game piece and a helper.
 * The game piece will set the LED to your team color and shut down the access point. The AP will start up again with a new password, allowing a player from another team to attempt to crack the new password and set the LED flag to their own color.
 * For best results, use several game pieces to keep the game interesting.
 
+## Project Goals
+This project has several goals, broken down into behavior for each game element:
+
+#### Game Piece Goals:
+1. The game piece creates a soft access point with a password chosen from a short "game password list."
+2. A 3 color RGB LED (or three LED's) is connected to the output pins, allowing us to flash red, green, blue, or white.
+3. A web interface is started on the game piece, it hosts a web server on port 80 that allows the following commands:
+* Set LED red
+* Set LED green
+* Set LED blue
+4. The LED is off. When a device joins the access point, an LED flashes white (looks more orange). 
+5. When a device joins the soft AP with the correct password and sets the LED color, two things happen:
+* The LED turns on, set to the color of the team who set the flag. It stays this color unless another team logs in and sets their flag.
+* The game piece shuts down the soft AP, choooses a new password from the game password list, and starts the soft AP again with the new password.
+
+
+#### Helper Goals:
+1. The helper starts up and joins the soft AP of any nearby game piece. 
+
 
 
 
