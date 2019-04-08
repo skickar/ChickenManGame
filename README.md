@@ -16,7 +16,7 @@ The Chicken Man game consists of two elements, a game piece and a helper.
 
 ## Required Hardware
 
-This game required three elements to play:
+This game requires three elements to play:
 * An ESP8266 (reccomended D1 mini or NodeMCU) to serve as the game piece and create the access point, with an RGB LED or three single LED's.
 * An ESP8266 to join the network created by the game piece, generating WPA handshakes.
 * A Raspberry Pi or other Linux computer with a wireless network adapter capible of packet capture. 
@@ -51,9 +51,9 @@ This project has several goals, broken down into behavior for each game element:
 #### Helper Goals:
 1. The helper starts up and joins the soft AP of any nearby game piece. Doing so creates a WPA handshake for the player to capture.
 2. To join the AP, the helper has a few behaviors. First, you can set the number of game pieces. Becaue the name of the access points is sequencial, (ChickenMan1, ChickenMan2, ChickenMan3), the helper will attempt to join all networks from "ChickenMan1" to the number of game pieces you set. If you set 3 game pieces, the helper will try to join "ChickenMan1, ChickenMan2, and ChickenMan3" access points.
-3. The helper may not know which password from the "game password list" the game piece is using, espeically if a team has set the flag already and cause the device to create a new soft AP with a different password. To fix this, we can ask the helper to follow the following behavior if the password isn't right:
+3. The helper may not know which password from the "game password list" the game piece is using, espeically if a team has set the flag already and causes the device to create a soft AP with a new password. To fix this, we can ask the helper to do the following if the current password isn't right:
 * When joining a game piece, try the first password in the password list. If that password fails, try the next password in the list (up to 15 passwords in the list).
-* When the login succeeds, save the name of the network and the password together, and use to join from now on. If another player logs in and the password is changed again, the process repeats itself when the helper finds the password has changed. 
+* When the login succeeds, save the name of the network and the password together, and use that pair to join the game piece AP from now on. If another player logs in and the password is changed again, the process repeats itself when the helper finds the password has changed. 
 
 
 When all is working correctly, the helper joins the AP of each game piece, saving the password associated with each game piece after trying each password stored in the game list. After the helper associates the right password with each network, it goes from network to network, connecting and disconnecting to generate WPA handshakes.
