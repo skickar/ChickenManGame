@@ -38,26 +38,16 @@ const char* getSSIDNumber(){
   return numberAdd[random(0, NUM_PASSWORDS)];
 }
 
-void ccat(char* buffer, const char* s1, const char* s2){
-  int i = 0; 
-  for(int j = 0; s1[j]; ++j, ++i)
-    buffer[i]=s1[j];
-  for(int j = 0; s2[j]; ++j, ++i)
-    buffer[i]=s2[j];
-  buffer[i]='\0';
-}
-
 void createBird(){
   // get ssid/pass stuff according to difficulty level
-  const char* password    = getPassword(level);
-  const char* ssid_prefix = getSSIDPrefix(level);
-  const char* ssid_number = getSSIDNumber();
+  String ssid;
+    ssid.concat(getSSIDPrefix(level));
+    ssid.concat(getSSIDNumber());
+  String password(getPassword(level));
 
-  char ssid[30];
-  ccat(ssid, ssid_prefix, ssid_number);
   Serial.println(ssid);
   Serial.println(password);
-  Serial.println(WiFi.softAP(ssid, password) ? "Ready" : "Failed!");
+  Serial.println(WiFi.softAP(ssid.c_str(), password.c_str()) ? "Ready" : "Failed!");
 }
 
 
