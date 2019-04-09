@@ -14,150 +14,50 @@
 #include <WiFiClient.h>
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
-
-
-
-
-
-
-
-
-
-
-
-
+#include "constants.h"
 
 int level = 0; 
 
-const char* easyPass[] PROGMEM = {
-"password\0",
-"123456789\0",
-"12345678\0",
-"1q2w3e4r\0",
-"sunshine\0",
-"football\0",
-"1234567890\0",
-"computer\0",
-"superman\0",
-"internet\0",
-"iloveyou\0",
-"1qaz2wsx\0",
-"baseball\0",
-"whatever\0",
-"princess\0"};
+// assuming each list has at least NUM_PASSWORDS
+const char* getPassword(int diff){
+  // invalid difficulty? assume easy
+  diff = diff < 0 || diff > 2 ? 0 : diff;
+  const char** pass_list[] = {easyPass, mediumPass, hardPass};
+  return pass_list[diff][random(0,NUM_PASSWORDS)];
+}
 
-const char* mediumPass[] PROGMEM = {
-"sweetheart\0",
-"overlord\0",
-"michaela\0",
-"meredith\0",
-"buttercup\0",
-"abc12345\0",
-"aardvark\0",
-"Passw0rd\0",
-"12345678910\0",
-"universal\0",
-"trinidad\0",
-"thursday\0",
-"standard\0",
-"pearljam\0",
-"anonymous\0",};
+const char* getSSIDPrefix(int diff){
+  // invalid difficulty? assume easy
+  diff = diff < 0 || diff > 2 ? 0 : diff;
+  const char* diff_list[] = {prefix0, prefix1, prefix2};
+  return diff_list[diff];
+}
 
-const char* hardPass[] PROGMEM = {
-"prairie chicken\0",
-"chicken-breasted\0",
-"chicken broth\0",
-"chicken cholera\0",
-"chickenpox\0",
-"chicken pox\0",
-"chicken roost\0",
-"Chicken scratch\0",
-"chicken septicemia\0",
-"CHICKEN SHACK\0",
-"chicken snake\0",
-"chickensoup\0",
-"chicken-spirited\0",
-"chickens-toes\0",
-"chicken thief\0",};
+const char* getSSIDNumber(){
+  // assume possible numbers is always same as number of passwords
+  return numberAdd[random(0, NUM_PASSWORDS)];
+}
 
-const char* numberAdd[] PROGMEM = {
-"One\0",
-"Two\0",
-"Three\0",
-"Four\0",
-"Five\0",
-"Six\0",
-"Seven\0",
-"Eight\0",
-"Nine\0",
-"Ten\0",
-"Eleven\0",
-"Twelve\0",
-"Thirteen\0",
-"Fourteen\0",
-"Fifteen\0"};
-
+void ccat(char* buffer, const char* s1, const char* s2){
+  int i = 0; 
+  for(int j = 0; s1[j]; ++j, ++i)
+    buffer[i]=s1[j];
+  for(int j = 0; s2[j]; ++j, ++i)
+    buffer[i]=s2[j];
+  buffer[i]='\0';
+}
 
 void createBird(){
-  int randNumber = random(0, 14);
-  Serial.print("Random Number:");
-  Serial.println(randNumber);
-  char ChickenNumber = char(randNumber);
-  const char* password = easyPass[randNumber];
-  const char* ssid = numberAdd[randNumber];
-  Serial.print("Creating the bird with SSID ");Serial.print(ssid);Serial.print(" and password ");Serial.println(password);
+  // get ssid/pass stuff according to difficulty level
+  const char* password    = getPassword(level);
+  const char* ssid_prefix = getSSIDPrefix(level);
+  const char* ssid_number = getSSIDNumber();
 
-  char buff[50];
-  const char s0[] = "Chicken_Easy_";
-  const char s1[] = "Chicken_Medium_";
-  const char s2[] = "Chicken_Hard_";
-  int i = 0;
-
-  
-   switch(level){
-
-    
-    case 0:
-    Serial.println("Setting soft-AP:");
-    // concatenate s0 and ssid
-    for(int j = 0; s0[j]; ++j, ++i)
-      buff[i]=s0[j];
-    for(int j = 0; ssid[j]; ++j, ++i)
-      buff[i]=ssid[j];
-    buff[i]='\0';
-    Serial.println(buff);
-    Serial.println(WiFi.softAP(buff, password) ? "Ready" : "Failed!");
-    break;
-
-    
-    case 1:
-    Serial.println("Setting soft-AP:");
-    // concatenate s1 and ssid
-    for(int j = 0; s1[j]; ++j, ++i)
-      buff[i]=s1[j];
-    for(int j = 0; ssid[j]; ++j, ++i)
-      buff[i]=ssid[j];
-    buff[i]='\0';
-    Serial.println(buff);
-    Serial.println(WiFi.softAP(buff, password) ? "Ready" : "Failed!");
-    break;
-
-    
-    case 2:
-    Serial.println("Setting soft-AP:");
-    // concatenate s2 and ssid
-    for(int j = 0; s2[j]; ++j, ++i)
-      buff[i]=s2[j];
-    for(int j = 0; ssid[j]; ++j, ++i)
-      buff[i]=ssid[j];
-    buff[i]='\0';
-    Serial.println(buff);
-    Serial.println(WiFi.softAP(buff, password) ? "Ready" : "Failed!");
-    break;    
-    default:
-    // statements
-    break;
-  }
+  char ssid[30];
+  ccat(ssid, ssid_prefix, ssid_number);
+  Serial.println(ssid);
+  Serial.println(password);
+  Serial.println(WiFi.softAP(ssid, password) ? "Ready" : "Failed!");
 }
 
 
