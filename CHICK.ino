@@ -99,12 +99,12 @@ void handleRoot() {
                   ++level;
                   createBird();
                 }else if (mode == "red") {
-                    answer = "seeing red?";
-                    digitalWrite(D1, LOW);
-                    digitalWrite(D2, HIGH);
-                    digitalWrite(D3, LOW);
-                    ++level;
-                    createBird();
+                  answer = "seeing red?";
+                  digitalWrite(D1, LOW);
+                  digitalWrite(D2, HIGH);
+                  digitalWrite(D3, LOW);
+                  ++level;
+                  createBird();
                 }
                 else if(mode == "green") {
                   answer = "the others must be green with envy";
