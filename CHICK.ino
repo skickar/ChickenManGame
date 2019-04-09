@@ -91,12 +91,28 @@ void handleRoot() {
             if (cmd == cmdLed) {
                 String mode = cmd.getArgument("mode").getValue();
 
-                if (mode == "on") {
-                    pinMode(2, HIGH);
-                    answer = "turned LED on";
-                } else if (mode == "off") {
-                    pinMode(2, LOW);
-                    answer = "turned LED off";
+                if (mode == "blue") {
+                  answer = "why so blue?";
+                  digitalWrite(D1, HIGH);
+                  digitalWrite(D2, LOW);
+                  digitalWrite(D3, LOW);
+                  ++level;
+                  createBird();
+                }else if (mode == "red") {
+                    answer = "seeing red?";
+                    digitalWrite(D1, LOW);
+                    digitalWrite(D2, HIGH);
+                    digitalWrite(D3, LOW);
+                    ++level;
+                    createBird();
+                }
+                else if(mode == "green") {
+                  answer = "the others must be green with envy";
+                  digitalWrite(D1, LOW);
+                  digitalWrite(D2, LOW);
+                  digitalWrite(D3, HIGH);
+                  ++level;
+                  createBird();
                 }
             }
         }
@@ -153,6 +169,10 @@ void handleNotFound() {
 void setup(void) {
     Serial.begin(115200);
     createBird();
+
+    pinMode(D1, OUTPUT);
+    pinMode(D2, OUTPUT);
+    pinMode(D3, OUTPUT);
 
     IPAddress myIP = WiFi.softAPIP();
     Serial.print("AP IP address: ");
