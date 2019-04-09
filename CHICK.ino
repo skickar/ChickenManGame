@@ -46,6 +46,40 @@ const char* easyPass[] PROGMEM = {
 "whatever\0",
 "princess\0"};
 
+const char* mediumPass[] PROGMEM = {
+"sweetheart\0",
+"overlord\0",
+"michaela\0",
+"meredith\0",
+"buttercup\0",
+"abc12345\0",
+"aardvark\0",
+"Passw0rd\0",
+"12345678910\0",
+"universal\0",
+"trinidad\0",
+"thursday\0",
+"standard\0",
+"pearljam\0",
+"anonymous\0",};
+
+const char* hardPass[] PROGMEM = {
+"prairie chicken\0",
+"chicken-breasted\0",
+"chicken broth\0",
+"chicken cholera\0",
+"chickenpox\0",
+"chicken pox\0",
+"chicken roost\0",
+"Chicken scratch\0",
+"chicken septicemia\0",
+"CHICKEN SHACK\0",
+"chicken snake\0",
+"chickensoup\0",
+"chicken-spirited\0",
+"chickens-toes\0",
+"chicken thief\0",};
+
 const char* numberAdd[] PROGMEM = {
 "One\0",
 "Two\0",
@@ -73,11 +107,30 @@ void createBird(){
   const char* ssid = numberAdd[randNumber];
   Serial.print("Creating the bird with SSID ");Serial.print(ssid);Serial.print(" and password ");Serial.println(password);
 
-  char buff[30];
+  char buff[50];
+  const char s0[] = "Chicken_Easy_";
   const char s1[] = "Chicken_Medium_";
+  const char s2[] = "Chicken_Hard_";
   int i = 0;
+
+  
    switch(level){
+
+    
     case 0:
+    Serial.println("Setting soft-AP:");
+    // concatenate s0 and ssid
+    for(int j = 0; s0[j]; ++j, ++i)
+      buff[i]=s0[j];
+    for(int j = 0; ssid[j]; ++j, ++i)
+      buff[i]=ssid[j];
+    buff[i]='\0';
+    Serial.println(buff);
+    Serial.println(WiFi.softAP(buff, password) ? "Ready" : "Failed!");
+    break;
+
+    
+    case 1:
     Serial.println("Setting soft-AP:");
     // concatenate s1 and ssid
     for(int j = 0; s1[j]; ++j, ++i)
@@ -88,11 +141,18 @@ void createBird(){
     Serial.println(buff);
     Serial.println(WiFi.softAP(buff, password) ? "Ready" : "Failed!");
     break;
-    case 1:
-    // statements
-    break;
+
+    
     case 2:
-    // statements
+    Serial.println("Setting soft-AP:");
+    // concatenate s2 and ssid
+    for(int j = 0; s2[j]; ++j, ++i)
+      buff[i]=s2[j];
+    for(int j = 0; ssid[j]; ++j, ++i)
+      buff[i]=ssid[j];
+    buff[i]='\0';
+    Serial.println(buff);
+    Serial.println(WiFi.softAP(buff, password) ? "Ready" : "Failed!");
     break;    
     default:
     // statements
