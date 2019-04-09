@@ -47,7 +47,7 @@ void createBird(){
 
   Serial.println(ssid);
   Serial.println(password);
-  Serial.println(WiFi.softAP(ssid.c_str(), password.c_str()) ? "Ready" : "Failed!");
+  WiFi.softAP(ssid.c_str(), password.c_str());
 }
 
 
