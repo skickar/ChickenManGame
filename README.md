@@ -2,8 +2,10 @@ The Chicken Man Game
 ======
 The Chicken Man Wi-Fi hacking game is a WPA/WPA2 cracking game for CTF's and hackerspaces.
 
+![Who will be the chicken man?](https://i.imgur.com/WOdqsh2.jpg "WHO WILL BE THE CHICKEN MAN")
+
 The purpose of this game is to have an ultra low-cost microcontroller based Wi-Fi hacking game for beginners.
-It is designed to be easy to set up, and requires no deauthing to practice.
+It is designed to be easy to set up, and requires no deauthing to practice. It has been tested on the D1 mini and NodeMCU.
  
 ![Who will be the chicken man?](https://previews.123rf.com/images/lisafx/lisafx0911/lisafx091100075/5918355-chicken-man-holding-stolen-cash-and-running-from-a-police-officer-isolated-on-white-.jpg "WHO WILL BE THE CHICKEN MAN")
 
