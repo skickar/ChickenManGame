@@ -30,7 +30,10 @@ This game requires three elements to play:
 * Begin capturing Wi-Fi traffic from the access point, apply filters to show when 4-way handshake is captured from the helper joining the game piece access point. 
 * Save the captured handshake as a .CAP file, run aircrack-ng or another cracking program against the game password list to brute-force the password to the access point.
 * Try accessing the Wi-Fi access point of the game piece with the cracked password. If it works, scan the network to find the IP address of the game piece webserver
-* Open the game piece webserver in a browser, and (if you are the red team) type "set LED red" to turn the LED of the game piece to your team's color
+* Open the game piece webserver in a browser, and (if you are the red team) click the "Red Team" button to turn the LED of the game piece to your team's color.
+
+![Who will be the chicken man?](https://i.imgur.com/CWArhK1.jpg "Set your team color!")
+
 * The game piece will set the LED to your team color and shut down the access point. The AP will start up again with a new password, allowing a player from another team to attempt to crack the new password and set the LED flag to their own color.
 * For best results, use several game pieces to keep the game interesting.
 
