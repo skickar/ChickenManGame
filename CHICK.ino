@@ -1,13 +1,19 @@
 /*
-   Copyright (c) 2019 Stefan Kremser
+   Copyright (c) 2019 Stefan Kremser, Kody Kinzie,  Brandon Paiz
    This software is licensed under the MIT License. See the license file for details.
    Source: github.com/spacehuhn/SimpleCLI
 
-   This example is based on the HelloServer example for the ESP8266.
-   You connect to the Access-Point, go to 192.168.4.1 and type in "led on" or "led off".
-   The parsing magic is happening in handleRoot().
+   This example is based on the simpleCLI example for the ESP8266.
+   
+   The Chicken Man Game is a multi-player Wi-Fi cracking game. You can use 1, 2, or 3 players (or teams).
+   The esp8266 checks the difficulty level and creates a Wi-Fi network using a password from that difficulty list
+   Once the player cracks the password and logs in to the Wi-Fi network, they can set the LED to their team color.
+   Setting the LED causes the esp8266 to close the connection and create a new Wi-Fi network with a harder password.
+   Players can then attempt to steal the flag by hacking the harder password and setting the LED to their team color.
+   Currently supports easy, medium, and hard mode. Password lists can be expanded to avoid collisions. 
+   
  */
-
+ 
 #include <SimpleCLI.h>
 
 #include <ESP8266WiFi.h>
@@ -15,15 +21,20 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include "constants.h"
-
 int level = 0; 
+const int ledPin =  LED_BUILTIN;// the number of the LED pin
+int ledState = LOW;             // ledState used to set the LED
+unsigned long previousMillis = 0;        // will store last time LED was updated
+const long interval = 1000;           // interval at which to blink (milliseconds) 
+
+
 
 // assuming each list has at least NUM_PASSWORDS
-const char* getPassword(int diff){
+const char* getPassword(int diff, int randomBird){
   // invalid difficulty? assume easy
   diff = diff < 0 || diff > 2 ? 0 : diff;
   const char** pass_list[] = {easyPass, mediumPass, hardPass};
-  return pass_list[diff][random(0,NUM_PASSWORDS)];
+  return pass_list[diff][randomBird];
 }
 
 const char* getSSIDPrefix(int diff){
@@ -33,24 +44,43 @@ const char* getSSIDPrefix(int diff){
   return diff_list[diff];
 }
 
-const char* getSSIDNumber(){
+const char* getSSIDNumber(int randomBird){
   // assume possible numbers is always same as number of passwords
-  return numberAdd[random(0, NUM_PASSWORDS)];
+  return numberAdd[randomBird];
 }
 
 void createBird(){
   // get ssid/pass stuff according to difficulty level
+  randomSeed(os_random());
+  int randomBird = random(0, NUM_PASSWORDS);
   String ssid;
     ssid.concat(getSSIDPrefix(level));
-    ssid.concat(getSSIDNumber());
-  String password(getPassword(level));
-
-  Serial.println(ssid);
-  Serial.println(password);
+    ssid.concat(getSSIDNumber(randomBird));
+  String password(getPassword(level, randomBird));
+  Serial.print("Creating the Chicken using seed: \t");Serial.println(randomBird);
+  Serial.print("The SSID is: \t");Serial.println(ssid);
+  Serial.print("The password is: \t");Serial.println(password);
   WiFi.softAP(ssid.c_str(), password.c_str());
 }
 
 
+void blinkBird(){
+    unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval) {
+    // save the last time you blinked the LED
+    previousMillis = currentMillis;
+    // if the LED is off turn it on and vice-versa:
+    if (ledState == LOW) {
+      ledState = HIGH;
+    } else {
+      ledState = LOW;
+    }
+    // set the LED with the ledState of the variable:
+    digitalWrite(D1, ledState);
+    digitalWrite(D2, ledState);
+    digitalWrite(D3, ledState);
+  }
+}
 
 
 
@@ -159,13 +189,13 @@ void handleNotFound() {
 }
 
 void setup(void) {
-    Serial.begin(115200);
+    delay(1500);
+    Serial.begin(115200);   
     createBird();
 
     pinMode(D1, OUTPUT);
     pinMode(D2, OUTPUT);
     pinMode(D3, OUTPUT);
-
     IPAddress myIP = WiFi.softAPIP();
     Serial.print("AP IP address: ");
     Serial.println(myIP);
@@ -196,4 +226,7 @@ void setup(void) {
 void loop(void) {
     server.handleClient();
     MDNS.update();
+    if (WiFi.softAPgetStationNum() != 0){
+    blinkBird();
+    }
 }
