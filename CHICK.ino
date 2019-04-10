@@ -57,6 +57,7 @@ void createBird(){
     ssid.concat(getSSIDPrefix(level));
     ssid.concat(getSSIDNumber(randomBird));
   String password(getPassword(level, randomBird));
+  Serial.print("Chicken Power Level: \t");Serial.println(level);
   Serial.print("Creating the Chicken using seed: \t");Serial.println(randomBird);
   Serial.print("The SSID is: \t");Serial.println(ssid);
   Serial.print("The password is: \t");Serial.println(password);
@@ -69,23 +70,16 @@ void blinkBird(){
   if (currentMillis - previousMillis >= interval) {
     // save the last time you blinked the LED
     previousMillis = currentMillis;
-    // if the LED is off turn it on and vice-versa:
-    if (ledState == LOW) {
-      ledState = HIGH;
+    // if the LED is off turn it on and vice-versa: I had to make this ugly but we could easily clean it up
+   int pinList[3] = {D1, D2, D3};
+  for (int i = 0; i < (sizeof(pinList)+1); i++)
+       if (digitalRead(pinList[i]) == LOW) {
+      digitalWrite(pinList[i], HIGH);
     } else {
-      ledState = LOW;
-    }
-    // set the LED with the ledState of the variable:
-    digitalWrite(D1, ledState);
-    digitalWrite(D2, ledState);
-    digitalWrite(D3, ledState);
+      digitalWrite(pinList[i], LOW);
   }
 }
-
-
-
-
-
+}
 
 
 ESP8266WebServer server(80);
@@ -226,6 +220,7 @@ void setup(void) {
 void loop(void) {
     server.handleClient();
     MDNS.update();
+    storeState();
     if (WiFi.softAPgetStationNum() != 0){
     blinkBird();
     }
