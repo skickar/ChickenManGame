@@ -21,13 +21,9 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include "constants.h"
-int level = 0; 
-const int ledPin =  LED_BUILTIN;// the number of the LED pin
-int ledState = LOW;             // ledState used to set the LED
-unsigned long previousMillis = 0;        // will store last time LED was updated
-const long interval = 1000;           // interval at which to blink (milliseconds) 
 
-
+int level = 0;
+int currentFlag = 3;
 
 // assuming each list has at least NUM_PASSWORDS
 const char* getPassword(int diff, int randomBird){
@@ -65,20 +61,23 @@ void createBird(){
 }
 
 
-void blinkBird(){
-    unsigned long currentMillis = millis();
+void blinkBird(int connections){
+  // something probably wrong if outside this range
+  if(connections < 1 || connections > 20)
+    return;
+
+  static unsigned long previousMillis;    // will store last time LED was updated
+  const long interval = 1000/connections; // interval at which to blink (milliseconds) 
+
+  unsigned long currentMillis = millis();
   if (currentMillis - previousMillis >= interval) {
     // save the last time you blinked the LED
     previousMillis = currentMillis;
     // if the LED is off turn it on and vice-versa: I had to make this ugly but we could easily clean it up
-   int pinList[3] = {D1, D2, D3};
-  for (int i = 0; i < (sizeof(pinList)+1); i++)
-       if (digitalRead(pinList[i]) == LOW) {
-      digitalWrite(pinList[i], HIGH);
-    } else {
-      digitalWrite(pinList[i], LOW);
+    int pinList[3] = {D1, D2, D3};
+    for (int i = 0; i < (sizeof(pinList)/sizeof(pinList[0])); i++)
+      digitalWrite(pinList[i], !digitalRead(pinList[i]));
   }
-}
 }
 
 
@@ -107,25 +106,28 @@ void handleRoot() {
 
                 if (mode == "blue") {
                   answer = "why so blue?";
+                  digitalWrite(D1, LOW);
+                  digitalWrite(D2, LOW);
+                  digitalWrite(D3, HIGH);
+                  ++level;
+                  currentFlag = 2;
+                  createBird();
+                }else if (mode == "red") {
+                  answer = "seeing red?";
                   digitalWrite(D1, HIGH);
                   digitalWrite(D2, LOW);
                   digitalWrite(D3, LOW);
                   ++level;
-                  createBird();
-                }else if (mode == "red") {
-                  answer = "seeing red?";
-                  digitalWrite(D1, LOW);
-                  digitalWrite(D2, HIGH);
-                  digitalWrite(D3, LOW);
-                  ++level;
+                  currentFlag = 0;
                   createBird();
                 }
                 else if(mode == "green") {
                   answer = "the others must be green with envy";
                   digitalWrite(D1, LOW);
-                  digitalWrite(D2, LOW);
-                  digitalWrite(D3, HIGH);
+                  digitalWrite(D2, HIGH);
+                  digitalWrite(D3, LOW);
                   ++level;
+                  currentFlag = 1;
                   createBird();
                 }
             }
@@ -220,8 +222,17 @@ void setup(void) {
 void loop(void) {
     server.handleClient();
     MDNS.update();
-    storeState();
-    if (WiFi.softAPgetStationNum() != 0){
-    blinkBird();
+    int connections = WiFi.softAPgetStationNum();
+    if (connections != 0){
+      blinkBird(connections);
+    }
+    // restore previous flag, if availible
+    else {
+      int pinList[3] = {D1, D2, D3};
+      for(int i = 0; i < sizeof(pinList)/sizeof(pinList[0]); ++i)
+        digitalWrite(pinList[i], LOW);
+      if(currentFlag < 3)
+        digitalWrite(pinList[currentFlag], HIGH);
     }
 }
+
