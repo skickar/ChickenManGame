@@ -21,30 +21,11 @@
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
 #include "constants.h"
+#include "AP_functions.h"
 
 int level = 0;
 int currentFlag = 3;
 int teamPoints[] = {0, 0, 0};
-
-// assuming each list has at least NUM_PASSWORDS
-const char* getPassword(int diff, int randomBird){
-  // invalid difficulty? assume easy
-  diff = diff < 0 || diff > 2 ? 0 : diff;
-  const char** pass_list[] = {easyPass, mediumPass, hardPass};
-  return pass_list[diff][randomBird];
-}
-
-const char* getSSIDPrefix(int diff){
-  // invalid difficulty? assume easy
-  diff = diff < 0 || diff > 3 ? 0 : diff;
-  const char* diff_list[] = {prefix0, prefix1, prefix2, prefix3};
-  return diff_list[diff];
-}
-
-const char* getSSIDNumber(int randomBird){
-  // assume possible numbers is always same as number of passwords
-  return numberAdd[randomBird];
-}
 
 void createBird(){
   // get ssid/pass stuff according to difficulty level
@@ -55,16 +36,12 @@ void createBird(){
     ssid.concat(getSSIDNumber(randomBird));
   String password(getPassword(level, randomBird));
 
-  if( level == 3 )
-    password = "edfd8e8160383696120dfb444a8b43f1";
-
   Serial.print("Chicken Power Level: \t");Serial.println(level);
   Serial.print("Creating the Chicken using seed: \t");Serial.println(randomBird);
   Serial.print("The SSID is: \t");Serial.println(ssid);
   Serial.print("The password is: \t");Serial.println(password);
   WiFi.softAP(ssid.c_str(), password.c_str());
 }
-
 
 void blinkBird(int connections){
   // something probably wrong if outside this range
