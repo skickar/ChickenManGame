@@ -90,8 +90,10 @@ Command cmdLed;
 
 void handlePoints(){
   String responce;
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 3; i++){
     responce += String(teamPoints[i]) += ",";
+    teamPoints[i]=0;
+  }
   server.send(200, "text/html", responce.c_str());
 }
 
