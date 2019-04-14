@@ -1,9 +1,9 @@
 /*
-   Copyright (c) 2019 Stefan Kremser, Kody Kinzie,  Brandon Paiz
+   Copyright (c) 2019 Kody Kinzie, Brandon Paiz for Leadership In Technology & RETIA.IO
    This software is licensed under the MIT License. See the license file for details.
-   Source: github.com/spacehuhn/SimpleCLI
+   TUNNEL SNAKES RULE!
 
-   This example is based on the simpleCLI example for the ESP8266.
+   This example is based on the simpleCLI example for the ESP8266, Copyright (c) 2019 Stefan Kremser
    
    The Chicken Man Game is a multi-player Wi-Fi cracking game. You can use 1, 2, or 3 players (or teams).
    The esp8266 checks the difficulty level and creates a Wi-Fi network using a password from that difficulty list
