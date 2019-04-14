@@ -6,6 +6,7 @@ const int NUM_PASSWORDS = 15;
 const char prefix0[] = "Chicken_Easy_";
 const char prefix1[] = "Chicken_Medium_";
 const char prefix2[] = "Chicken_Hard_";
+const char prefix3[] = "CHICKEN COOKED";
 
 const int EASY_POINTS_PER_SECOND   = 1;
 const int MEDIUM_POINTS_PER_SECOND = 2;

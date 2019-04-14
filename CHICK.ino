@@ -36,8 +36,8 @@ const char* getPassword(int diff, int randomBird){
 
 const char* getSSIDPrefix(int diff){
   // invalid difficulty? assume easy
-  diff = diff < 0 || diff > 2 ? 0 : diff;
-  const char* diff_list[] = {prefix0, prefix1, prefix2};
+  diff = diff < 0 || diff > 3 ? 0 : diff;
+  const char* diff_list[] = {prefix0, prefix1, prefix2, prefix3};
   return diff_list[diff];
 }
 
@@ -54,6 +54,10 @@ void createBird(){
     ssid.concat(getSSIDPrefix(level));
     ssid.concat(getSSIDNumber(randomBird));
   String password(getPassword(level, randomBird));
+
+  if( level == 3 )
+    password = "edfd8e8160383696120dfb444a8b43f1";
+
   Serial.print("Chicken Power Level: \t");Serial.println(level);
   Serial.print("Creating the Chicken using seed: \t");Serial.println(randomBird);
   Serial.print("The SSID is: \t");Serial.println(ssid);
@@ -107,9 +111,14 @@ SimpleCLI cli;
 String  answer;
 Command cmdLed;
 
-void handleRoot() {
-  if (level == 2) return; //chicken already at hardest level
+void handlePoints(){
+  String responce;
+  for (int i = 0; i < 3; i++)
+    responce += String(teamPoints[i]) += ",";
+  server.send(200, "text/html", responce.c_str());
+}
 
+void handleRoot() {
     // If data was sent
     if (server.args() > 0) {
         // Echo the input on the serial interface
@@ -227,6 +236,7 @@ void setup(void) {
 
     server.on("/", handleRoot);
     server.on("/index.html", handleRoot);
+    server.on("/points.html", handlePoints);
 
     server.on("/inline", []() {
         server.send(200, "text/plain", "this works as well");
