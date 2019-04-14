@@ -80,6 +80,14 @@ void blinkBird(int connections){
   }
 }
 
+void unblinkBird(){
+  int pinList[3] = {D1, D2, D3};
+  for(int i = 0; i < sizeof(pinList)/sizeof(pinList[0]); ++i)
+    digitalWrite(pinList[i], LOW);
+  if(currentFlag < 3)
+  digitalWrite(pinList[currentFlag], HIGH);
+}
+
 
 ESP8266WebServer server(80);
 SimpleCLI cli;
@@ -223,16 +231,9 @@ void loop(void) {
     server.handleClient();
     MDNS.update();
     int connections = WiFi.softAPgetStationNum();
-    if (connections != 0){
+    if (connections != 0)
       blinkBird(connections);
-    }
-    // restore previous flag, if availible
-    else {
-      int pinList[3] = {D1, D2, D3};
-      for(int i = 0; i < sizeof(pinList)/sizeof(pinList[0]); ++i)
-        digitalWrite(pinList[i], LOW);
-      if(currentFlag < 3)
-        digitalWrite(pinList[currentFlag], HIGH);
-    }
+    else
+      unblinkBird();
 }
 
