@@ -6,6 +6,13 @@ const int NUM_PASSWORDS = 15;
 const char prefix0[] = "Chicken_Easy_";
 const char prefix1[] = "Chicken_Medium_";
 const char prefix2[] = "Chicken_Hard_";
+
+const int EASY_POINTS_PER_SECOND   = 1;
+const int MEDIUM_POINTS_PER_SECOND = 2;
+const int HARD_POINTS_PER_SECOND   = 5;
+
+// how often to increment team points by [DIFF]_POINTS_PER_SECOND
+const int POINT_INTERVAL_SECONDS = 1;
   
 const char* easyPass[] PROGMEM = {
 	"password\0",

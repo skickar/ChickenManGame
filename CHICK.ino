@@ -24,6 +24,7 @@
 
 int level = 0;
 int currentFlag = 3;
+int teamPoints[] = {0, 0, 0};
 
 // assuming each list has at least NUM_PASSWORDS
 const char* getPassword(int diff, int randomBird){
@@ -88,6 +89,17 @@ void unblinkBird(){
   digitalWrite(pinList[currentFlag], HIGH);
 }
 
+void calculatePoints(){
+  static unsigned long previousMillis;
+  const int point_allocations[] = {EASY_POINTS_PER_SECOND, MEDIUM_POINTS_PER_SECOND, HARD_POINTS_PER_SECOND};
+
+  int currentLevel = level < 3 ? level : 0;
+  unsigned long currentMillis = millis();
+  if (currentFlag >= 0 && currentFlag < 3 && currentMillis - previousMillis >= POINT_INTERVAL_SECONDS*1000){
+    teamPoints[currentFlag] += point_allocations[currentLevel-1];
+    previousMillis = currentMillis;
+  }
+}
 
 ESP8266WebServer server(80);
 SimpleCLI cli;
@@ -96,6 +108,8 @@ String  answer;
 Command cmdLed;
 
 void handleRoot() {
+  if (level == 2) return; //chicken already at hardest level
+
     // If data was sent
     if (server.args() > 0) {
         // Echo the input on the serial interface
@@ -228,6 +242,7 @@ void setup(void) {
 }
 
 void loop(void) {
+    calculatePoints();
     server.handleClient();
     MDNS.update();
     int connections = WiFi.softAPgetStationNum();
