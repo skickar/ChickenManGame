@@ -74,7 +74,7 @@ void calculatePoints(){
   static unsigned long previousMillis;
   const int point_allocations[] = {EASY_POINTS_PER_SECOND, MEDIUM_POINTS_PER_SECOND, HARD_POINTS_PER_SECOND};
 
-  int currentLevel = level < 3 ? level : 0;
+  int currentLevel = level < 4 ? level : 0;
   unsigned long currentMillis = millis();
   if (currentFlag >= 0 && currentFlag < 3 && currentMillis - previousMillis >= POINT_INTERVAL_SECONDS*1000){
     teamPoints[currentFlag] += point_allocations[currentLevel-1];
