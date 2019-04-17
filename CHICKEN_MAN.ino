@@ -28,7 +28,9 @@ void loop(){
     const char* password;
     if (getPassFromSSID(currentNetwork, password)){
       // join and get points
-      Serial.println(currentNetwork.c_str());
+      Serial.print("Connecting to ");
+      Serial.print(currentNetwork.c_str());
+      Serial.print(" with password ");
       Serial.println(password);
       WiFi.begin(currentNetwork.c_str(), password);
 
