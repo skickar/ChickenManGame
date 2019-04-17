@@ -133,7 +133,7 @@ void setup() {
 
     // Setup LED(s)
     led.begin();
-    led.setFlagColor(1);
+    led.setColor(1, 1, 1);
 
     // DNS
     MDNS.begin("ChickenManGame");
@@ -156,6 +156,17 @@ void setup() {
 
     // Setup Game Access Point
     bird.begin();
+
+    // If something went wrong, blink for 10s and then restart
+    if (bird.errored()) {
+        unsigned long startTime = millis();
+
+        while (millis() - startTime <= 10000) {
+            led.blinkError();
+        }
+
+        ESP.restart();
+    }
 }
 
 // ========== Loop ========== //

@@ -19,33 +19,44 @@ const unsigned int POINTS_PER_SECOND[] = {
 // How often to increment team points in seconds
 const unsigned int POINT_INTERVAL = 1;
 
-// SSID Prefix
-const char* SSID_PREFIX[] PROGMEM = {
-    "Chicken_Easy_",
-    "Chicken_Medium_",
-    "Chicken_Hard_",
-    "CHICKEN_COOKED_"
+// Hide SSID at level 2 (hard)
+const bool HIDDEN_SSID = true;
+
+// Max connections to access point at the same time
+const unsigned int MAX_CONNECTIONS = 5;
+
+// Max channel for access point (11=US,13=Europe,14=Japan)
+const unsigned int MAX_CHANNEL = 11;
+
+// Level names
+const char* DIFFICULTY[] PROGMEM = {
+    "Easy",
+    "Medium",
+    "Hard",
+    "COOKED"
 };
+
+// SSID Prefix
+const char* SSID_PREFIX PROGMEM = "Chicken_";
 
 // SSID Suffix
 const char* SSID_SUFFIX[] PROGMEM = {
-    "00",
-    "01",
-    "02",
-    "03",
-    "04",
-    "05",
-    "06",
-    "07",
-    "08",
-    "09",
-    "10",
-    "11",
-    "12",
-    "13",
-    "14",
-    "15",
-    "_?"
+    "_00",
+    "_01",
+    "_02",
+    "_03",
+    "_04",
+    "_05",
+    "_06",
+    "_07",
+    "_08",
+    "_09",
+    "_10",
+    "_11",
+    "_12",
+    "_13",
+    "_14",
+    "_15"
 };
 
 // Passwords

@@ -43,3 +43,20 @@ void LED::blink(unsigned long interval) {
         blinked   = !blinked;
     }
 }
+
+void LED::blinkError() {
+    if (millis() - lastBlink >= 500) {
+        if (blinked) {
+            digitalWrite(LED_PIN_R, 0);
+            digitalWrite(LED_PIN_G, 0);
+            digitalWrite(LED_PIN_B, 0);
+        }  else {
+            digitalWrite(LED_PIN_R, 1);
+            digitalWrite(LED_PIN_G, 1);
+            digitalWrite(LED_PIN_B, 1);
+        }
+
+        lastBlink = millis();
+        blinked   = !blinked;
+    }
+}

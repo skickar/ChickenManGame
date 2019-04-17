@@ -26,6 +26,7 @@ class LED {
         void setColor(int r, int g, int b);
         void setFlagColor(int flag);
         void blink(unsigned long interval);
+        void blinkError();
 };
 
 #endif /* ifndef LED_H */

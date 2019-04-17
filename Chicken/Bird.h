@@ -10,7 +10,11 @@ extern const unsigned int NUM_PASSWORDS;
 extern const char* SUPER_SECRET PROGMEM;
 extern const unsigned int POINTS_PER_SECOND[];
 extern const unsigned int POINT_INTERVAL;
-extern const char* SSID_PREFIX[] PROGMEM;
+extern const bool HIDDEN_SSID;
+extern const unsigned int MAX_CONNECTIONS;
+extern const unsigned int MAX_CHANNEL;
+extern const char* DIFFICULTY[] PROGMEM;
+extern const char* SSID_PREFIX PROGMEM;
 extern const char* SSID_SUFFIX[] PROGMEM;
 extern const char* EASY_PSWD[] PROGMEM;
 extern const char* MEDIUM_PSWD[] PROGMEM;
@@ -31,10 +35,13 @@ class Bird {
 
         unsigned int points[3] = { 0, 0, 0 }; // Red-Points, Green-Points, Blue-Points
 
+        bool error = false;
+
         String getSSID();
-
         String getPassword();
+        int getChannel();
 
+        void createID();
         void createAP();
 
         void updatePoints();
@@ -54,6 +61,8 @@ class Bird {
         int getFlag();
 
         bool reset(String password);
+
+        bool errored();
 };
 
 
