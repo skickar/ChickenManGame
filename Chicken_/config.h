@@ -120,7 +120,7 @@ const char* HTML_PREFIX PROGMEM =
     "<a href=\"index.html?cmd=led+green\" class=\"button\" style=\"background-color:#44af69\">Green Team</a>"
     "<a href=\"index.html?cmd=led+blue\" class=\"button\" style=\"background-color:#3369ff\">Blue Team</a>"
     "<p>";
- 
+
 const char* HTML_SUFFIX PROGMEM =
     "</p>"
     "</body>"

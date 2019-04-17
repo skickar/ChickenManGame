@@ -5,6 +5,7 @@
 #include <Arduino.h>     // String
 #include <ESP8266WiFi.h> // WiFi
 
+// From config.h
 extern const unsigned int NUM_PASSWORDS;
 extern const char* SUPER_SECRET PROGMEM;
 extern const unsigned int POINTS_PER_SECOND[];

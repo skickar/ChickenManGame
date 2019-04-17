@@ -24,7 +24,7 @@
 
 // [Local files]
 #include "Bird_.h"
-#include "led.h"
+#include "LED_.h"
 
 #include "config.h"
 #include "hardware.h"
@@ -38,6 +38,7 @@ Command   cmdFlag;
 Command   cmdPoints;
 Command   cmdReset;
 
+LED  led;
 Bird bird; // Game instance
 
 // ========== Global Functions ========== //
@@ -131,8 +132,8 @@ void setup() {
     Serial.println("Starting Bird");
 
     // Setup LED(s)
-    setupLED();
-    setFlagColor(1);
+    led.begin();
+    led.setFlagColor(1);
 
     // DNS
     MDNS.begin("ChickenManGame");
@@ -165,9 +166,9 @@ void loop() {
     // Blink when devices are connected
     int connections = bird.getConnections();
     if (connections) {
-        blink(connections);
+        led.blink(connections);
     } else {
-        setFlagColor(bird.getFlag());
+        led.setFlagColor(bird.getFlag());
     }
 
     // Serial CLI
