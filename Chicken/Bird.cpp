@@ -4,24 +4,18 @@
 // ========= Private ======== //
 
 String Bird::getSSID() {
-    if (level > 3) level = 3;
-    if (id >= NUM_PASSWORDS) id = 0;
-
-    return String(SSID_PREFIX) + String(DIFFICULTY[level]) + String(SSID_SUFFIX[id]);
+    return String(SSID_PREFIX) + String(DIFFICULTY[stats.level]) + String(SSID_SUFFIX[stats.id]);
 }
 
 String Bird::getPassword() {
-    if (level > 3) level = 3;
-    if (id >= NUM_PASSWORDS) id = 0;
-
-    if (level == 3) return String(SUPER_SECRET);
+    if (stats.level == 3) return String(SUPER_SECRET);
 
     const char** pswdList[] = { EASY_PSWD, MEDIUM_PSWD, HARD_PSWD };
-    return String(pswdList[level][id]);
+    return String(pswdList[stats.level][stats.id]);
 }
 
 int Bird::getChannel() {
-    return (id % MAX_CHANNEL) + 1;
+    return (stats.id % MAX_CHANNEL) + 1;
 }
 
 void Bird::createAP() {
@@ -33,21 +27,24 @@ void Bird::createAP() {
     WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
 
     // Create SSID and password
-    ssid = getSSID();
-    pswd = getPassword();
+    String ssid     = getSSID();
+    String password = getPassword();
+
+    strncpy(stats.ssid, ssid.c_str(), 32);
+    strncpy(stats.pswd, password.c_str(), 64);
 
     // Start access point
-    WiFi.softAP(ssid.c_str(), pswd.c_str(), getChannel(), HIDDEN_SSID && level == 2, MAX_CONNECTIONS);
+    WiFi.softAP(stats.ssid, stats.pswd, getChannel(), HIDDEN_SSID && stats.level == 2, MAX_CONNECTIONS);
 
     // Print infos
     Serial.println("--------------------------------------------");
-    Serial.printf("Chicken Level: \t%d\n", level);
-    Serial.printf("Chicken ID: \t%d\n", id);
+    Serial.printf("Chicken Level: \t%d\n", stats.level);
+    Serial.printf("Chicken ID: \t%d\n", stats.id);
     Serial.printf("Channel: \t%d\n", getChannel());
     Serial.printf("MAC-Address: \t%s\n", WiFi.softAPmacAddress().c_str());
     Serial.printf("IP-Address: \t%s\n", WiFi.softAPIP().toString().c_str());
-    Serial.printf("SSID: \t\t%s\t\n", ssid.c_str());
-    Serial.printf("Password: \t%s\t\n", pswd.c_str());
+    Serial.printf("SSID: \t\t%s\t\n", stats.ssid);
+    Serial.printf("Password: \t%s\t\n", stats.pswd);
     Serial.println("---------------------------------------------");
 }
 
@@ -56,17 +53,17 @@ void Bird::updatePoints() {
     if (millis() - lastPointUpdate >= POINT_INTERVAL * 1000) {
         lastPointUpdate = millis();
 
-        if (level > 3) level = 3;
-        if (flag > 2) flag = 1;
+        if (stats.level > 3) stats.level = 3;
+        if (stats.flag > 2) stats.flag = 1;
 
-        if (level != 3) { // Not locked
-            points[flag] += POINTS_PER_SECOND[level];
+        if (stats.level != 3) { // Not locked
+            stats.points[stats.flag] += POINTS_PER_SECOND[stats.level];
         }
     }
 }
 
 void Bird::createID() {
-    id = random(0, NUM_PASSWORDS);
+    stats.id = random(0, NUM_PASSWORDS);
 
     int s = random(1, 5);
 
@@ -92,8 +89,8 @@ void Bird::createID() {
 
         if (ssid.startsWith(SSID_PREFIX)) {
             // If found network has the same ID, take next one
-            if (ssid.endsWith(SSID_SUFFIX[id])) {
-                id = (id+1) % NUM_PASSWORDS;
+            if (ssid.endsWith(SSID_SUFFIX[stats.id])) {
+                stats.id = (stats.id+1) % NUM_PASSWORDS;
                 ++tries;
             }
         }
@@ -102,15 +99,27 @@ void Bird::createID() {
     }
 
     if (tries >= NUM_PASSWORDS) {
-        id    = 0;
-        error = true;
+        stats.id = 0;
+        error    = true;
         Serial.println("ERROR: All IDs already in use");
     } else {
-        Serial.printf("ID set to %d\n", id);
+        Serial.printf("ID set to %d\n", stats.id);
     }
 }
 
 // ========= Public ========= //
+Bird::Bird() {
+    stats.id    = 0;
+    stats.level = 0;
+    stats.flag  = 1;
+
+    for (int i = 0; i<3; i++) stats.points[i] = 0;
+
+    for (int i = 0; i<33; i++) stats.ssid[i] = '\0';
+
+    for (int i = 0; i<65; i++) stats.pswd[i] = '\0';
+}
+
 void Bird::begin() {
     createID();
     createAP();
@@ -125,10 +134,10 @@ int Bird::getConnections() {
 }
 
 void Bird::setFlag(unsigned int flag) {
-    if ((flag <= 2) && (level < 3)) {
-        this->flag = flag;
-        if (level < 4) {
-            ++level;
+    if ((flag <= 2) && (stats.level < 3)) {
+        stats.flag = flag;
+        if (stats.level < 4) {
+            ++stats.level;
             createAP();
         }
     }
@@ -136,28 +145,28 @@ void Bird::setFlag(unsigned int flag) {
 
 int Bird::getPoints(unsigned int team) {
     team = (team > 2) ? 1 : team;
-    return points[team];
+    return stats.points[team];
 }
 
 String Bird::getPointsString() {
-    return '(' + String(points[0]) + ',' + String(points[1]) + ',' + String(points[2]) + ')';
+    return '(' + String(stats.points[0]) + ',' + String(stats.points[1]) + ',' + String(stats.points[2]) + ')';
 }
 
 int Bird::getLevel() {
-    return level;
+    return stats.level;
 }
 
 int Bird::getFlag() {
-    return flag;
+    return stats.flag;
 }
 
 bool Bird::reset(String password) {
     if (password == SUPER_SECRET) {
         Serial.println("Resetting Game");
 
-        for (int i = 0; i < 3; i++) points[i] = 0;
-        level = 0;
-        flag  = 1;
+        for (int i = 0; i < 3; i++) stats.points[i] = 0;
+        stats.level = 0;
+        stats.flag  = 1;
         createAP();
 
         return true;

@@ -20,20 +20,25 @@ extern const char* EASY_PSWD[] PROGMEM;
 extern const char* MEDIUM_PSWD[] PROGMEM;
 extern const char* HARD_PSWD[];
 
+// ========== Game Stats ========== //
+typedef struct game_stats {
+    unsigned int id;        // Random generated ID
+    unsigned int level;     // 0: Easy, 1: Medium, 2: Hard, 3: Locked
+    unsigned int flag;      // 0: Red, 1: Green, 3: Blue
+
+    unsigned int points[3]; // Red-Points, Green-Points, Blue-Points
+
+    char ssid[33];          // SSID of access point
+    char pswd[65];          // Password of access point
+} game_stats;
+
 // ========== Bird Class ========== //
 
 class Bird {
     private:
-        String ssid;                          // SSID of access point
-        String pswd;                          // Password of access point
+        game_stats stats;
 
-        unsigned long lastPointUpdate = 0;    // Last time the team points were updated
-
-        unsigned int id    = 0;               // Random generated ID
-        unsigned int level = 0;               // 0: Easy, 1: Medium, 2: Hard, 3: Locked
-        unsigned int flag  = 1;               // 0: Red, 1: Green, 3: Blue
-
-        unsigned int points[3] = { 0, 0, 0 }; // Red-Points, Green-Points, Blue-Points
+        unsigned long lastPointUpdate = 0; // Last time the team points were updated
 
         bool error = false;
 
@@ -47,6 +52,8 @@ class Bird {
         void updatePoints();
 
     public:
+        Bird();
+
         void begin();
         void update();
 
