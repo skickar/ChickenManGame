@@ -9,6 +9,9 @@ int totalScores[] = {0,0,0};
 
 void setup(){
   Serial.begin(115200);
+  pinMode(D1,OUTPUT);
+  pinMode(D2,OUTPUT);
+  pinMode(D3,OUTPUT);
 }
 
 void loop(){
@@ -49,16 +52,22 @@ void loop(){
 }
 
 void handleIncomingScore(String score){
-  //Serial.println(score.toInt());
+  int max = 0;
+  Serial.println("CURRENT TOTAL SCORE:");
   for(int i = 0; i < 3; ++i){
-      Serial.println(score);
     totalScores[i] += score.toInt();
     score = score.substring( score.indexOf(',')+1, score.length());
+    if (totalScores[max] < totalScores[i])
+      max = i;
+    Serial.print(totalScores[i]);
+    Serial.print(i==2 ? "\r\n" : ", ");
   }
-  Serial.println("TOTAL SCORE:");
+
+  int LEDS[] = {D1,D2,D3};
   for(int i = 0; i < 3; ++i){
-    Serial.println(totalScores[i]);
+    digitalWrite(LEDS[i], LOW);
   }
+  digitalWrite(LEDS[max], HIGH);
 }
 
 bool getPassFromSSID(String ssid, const char*& pass){
