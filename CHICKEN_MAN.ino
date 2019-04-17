@@ -65,11 +65,13 @@ void handleIncomingScore(String score){
     Serial.print(i==2 ? "\r\n" : ", ");
   }
 
+  // set LED of current leading team (none if all scores zero)
   int LEDS[] = {D1,D2,D3};
   for(int i = 0; i < 3; ++i){
     digitalWrite(LEDS[i], LOW);
   }
-  digitalWrite(LEDS[max], HIGH);
+  if(!digitalRead(LEDS[max]))
+    digitalWrite(LEDS[max], HIGH);
 }
 
 bool getPassFromSSID(String ssid, const char*& pass){
