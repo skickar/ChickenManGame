@@ -16,11 +16,11 @@
 // ========== Includes ========== //
 
 // [ESP8266 Libraries]
- #include <ESP8266WebServer.h> // ESP8266WebServer
- #include <ESP8266mDNS.h>      // MDNS
+ #include <ESP8266WebServer.h>
+ #include <ESP8266mDNS.h>
 
 // [External Libraries]
- #include <SimpleCLI.h>        // SimpleCLI
+ #include <SimpleCLI.h>
 
 // [Local files]
 #include "Bird.h"
@@ -28,7 +28,6 @@
 
 #include "config.h"
 #include "hardware.h"
-
 
 // ========== Global Variables ========== //
 ESP8266WebServer webServer(80); // Web Server

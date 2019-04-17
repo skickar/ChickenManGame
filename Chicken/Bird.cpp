@@ -38,13 +38,13 @@ void Bird::createAP() {
 
     // Print infos
     Serial.println("--------------------------------------------");
-    Serial.printf("Chicken Level: \t%d\n", stats.level);
-    Serial.printf("Chicken ID: \t%d\n", stats.id);
-    Serial.printf("Channel: \t%d\n", getChannel());
-    Serial.printf("MAC-Address: \t%s\n", WiFi.softAPmacAddress().c_str());
-    Serial.printf("IP-Address: \t%s\n", WiFi.softAPIP().toString().c_str());
-    Serial.printf("SSID: \t\t%s\t\n", stats.ssid);
-    Serial.printf("Password: \t%s\t\n", stats.pswd);
+    Serial.printf("Chicken Level: %d\n", stats.level);
+    Serial.printf("Chicken ID:    %d\n", stats.id);
+    Serial.printf("Channel:       %d\n", getChannel());
+    Serial.printf("MAC-Address:   %s\n", WiFi.softAPmacAddress().c_str());
+    Serial.printf("IP-Address:    %s\n", WiFi.softAPIP().toString().c_str());
+    Serial.printf("SSID:          %s\n", stats.ssid);
+    Serial.printf("Password:      %s\n", stats.pswd);
     Serial.println("---------------------------------------------");
 }
 
@@ -59,6 +59,12 @@ void Bird::updatePoints() {
         if (stats.level != 3) { // Not locked
             stats.points[stats.flag] += POINTS_PER_SECOND[stats.level];
         }
+
+        // Save stats
+        EEPROM.begin(4095);
+        EEPROM.put(STATS_ADDR, stats);
+        EEPROM.commit();
+        EEPROM.end();
     }
 }
 
@@ -109,6 +115,8 @@ void Bird::createID() {
 
 // ========= Public ========= //
 Bird::Bird() {
+    stats.magic_num = MAGIC_NUM;
+
     stats.id    = 0;
     stats.level = 0;
     stats.flag  = 1;
@@ -121,7 +129,21 @@ Bird::Bird() {
 }
 
 void Bird::begin() {
-    createID();
+    // Try to recover previous game stats
+    game_stats tmpStats;
+
+    EEPROM.begin(4095);
+    EEPROM.get(STATS_ADDR, tmpStats);
+    EEPROM.end();
+
+    if (tmpStats.magic_num == MAGIC_NUM) {
+        Serial.println("Revived bird");
+        this->stats = tmpStats;
+    } else {
+        Serial.println("Created new bird");
+        createID();
+    }
+
     createAP();
 }
 
@@ -165,8 +187,11 @@ bool Bird::reset(String password) {
         Serial.println("Resetting Game");
 
         for (int i = 0; i < 3; i++) stats.points[i] = 0;
+
         stats.level = 0;
         stats.flag  = 1;
+
+        createID();
         createAP();
 
         return true;

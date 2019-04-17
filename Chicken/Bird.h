@@ -2,8 +2,9 @@
 #define BIRD_H
 
 // ========== Includes ========== //
-#include <Arduino.h>     // String
-#include <ESP8266WiFi.h> // WiFi
+#include <Arduino.h>     // String Class
+#include <ESP8266WiFi.h> // Scan WiFi
+#include <EEPROM.h>      // Save stats
 
 // From config.h
 extern const unsigned int NUM_PASSWORDS;
@@ -21,7 +22,12 @@ extern const char* MEDIUM_PSWD[] PROGMEM;
 extern const char* HARD_PSWD[];
 
 // ========== Game Stats ========== //
+#define MAGIC_NUM 123456789
+#define STATS_ADDR 1
+
 typedef struct game_stats {
+    unsigned int magic_num; // Used to safely read and write to EEPROM
+
     unsigned int id;        // Random generated ID
     unsigned int level;     // 0: Easy, 1: Medium, 2: Hard, 3: Locked
     unsigned int flag;      // 0: Red, 1: Green, 3: Blue
