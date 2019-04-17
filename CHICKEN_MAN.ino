@@ -55,7 +55,7 @@ void loop(){
 
 void handleIncomingScore(String score){
   int max = 0;
-  Serial.println("CURRENT TOTAL SCORE:");
+  Serial.print("CURRENT TOTAL SCORE: ");
   for(int i = 0; i < 3; ++i){
     totalScores[i] += score.toInt();
     score = score.substring( score.indexOf(',')+1, score.length());
