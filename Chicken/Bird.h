@@ -6,6 +6,8 @@
 #include <ESP8266WiFi.h> // Scan WiFi
 #include <EEPROM.h>      // Save stats
 
+#include "types.h"       // TEAM, LEVEL enums
+
 // From config.h
 extern const unsigned int NUM_PASSWORDS;
 extern const char* SUPER_SECRET PROGMEM;
@@ -29,8 +31,8 @@ typedef struct game_stats {
     unsigned int magic_num; // Used to safely read and write to EEPROM
 
     unsigned int id;        // Random generated ID
-    unsigned int level;     // 0: Easy, 1: Medium, 2: Hard, 3: Locked
-    unsigned int flag;      // 0: Red, 1: Green, 3: Blue
+    LEVEL        level;     // 0: Easy, 1: Medium, 2: Hard, 3: Locked
+    TEAM         flag;      // 0: Red, 1: Green, 3: Blue
 
     unsigned int points[3]; // Red-Points, Green-Points, Blue-Points
 
@@ -65,15 +67,15 @@ class Bird {
 
         int getConnections();
 
-        void setFlag(unsigned int flag);
+        void setFlag(TEAM flag);
 
-        int getPoints(unsigned int team);
-        String getPointsString();
+        int getPoints(TEAM team);
+        String getPointsString(bool reset = true);
 
-        int getLevel();
-        int getFlag();
+        LEVEL getLevel();
+        TEAM getFlag();
 
-        bool reset(String password);
+        bool resetGame(String password);
 
         bool errored();
 };

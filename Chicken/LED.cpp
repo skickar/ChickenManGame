@@ -5,7 +5,7 @@ void LED::begin() {
     pinMode(LED_PIN_G, OUTPUT);
     pinMode(LED_PIN_B, OUTPUT);
 
-    setColor(0, 0, 0);
+    setColor(1, 1, 1);
 }
 
 void LED::setColor(int r, int g, int b) {
@@ -18,13 +18,8 @@ void LED::setColor(int r, int g, int b) {
     digitalWrite(LED_PIN_B, ledB);
 }
 
-void LED::setFlagColor(int flag) {
-    if ((flag < 0) || (flag > 3)) {
-        // Wrong number!
-        return;
-    }
-
-    setColor(flag == 0, flag == 1, flag == 2);
+void LED::setColor(TEAM flag) {
+    setColor(flag == RED, flag == GREEN, flag == BLUE);
 }
 
 void LED::blink(unsigned long interval) {

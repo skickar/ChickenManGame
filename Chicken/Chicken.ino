@@ -28,6 +28,7 @@
 
 #include "config.h"
 #include "hardware.h"
+#include "types.h"
 
 // ========== Global Variables ========== //
 ESP8266WebServer webServer(80); // Web Server
@@ -57,13 +58,13 @@ String handleCLI(String input) {
             String team = cmd.getArgument("team").getValue();
 
             if (team.equalsIgnoreCase("blue")) {
-                bird.setFlag(2);
+                bird.setFlag(BLUE);
                 return "Why so blue?";
             } else if (team.equalsIgnoreCase("red")) {
-                bird.setFlag(0);
+                bird.setFlag(RED);
                 return "Seeing red?";
             } else if (team.equalsIgnoreCase("green")) {
-                bird.setFlag(1);
+                bird.setFlag(GREEN);
                 return "The others must be green with envy!";
             } else {
                 return "Wrong team, mate!";
@@ -71,7 +72,7 @@ String handleCLI(String input) {
         } else if (cmd == cmdPoints) {
             return bird.getPointsString();
         } else if (cmd == cmdReset) {
-            if (bird.reset(cmd.getArgument("pswd").getValue())) {
+            if (bird.resetGame(cmd.getArgument("pswd").getValue())) {
                 return "Resetted game stats!";
             };
         }
@@ -100,7 +101,11 @@ void handleRoot() {
     html += String(HTML_SUFFIX);
 
     // Send HTML to user
-    webServer.send(200, "text/html", html.c_str());
+    webServer.send(200, "text/html", html);
+}
+
+void handlePoints() {
+    webServer.send(200, "text/html", bird.getPointsString());
 }
 
 void handleNotFound() {
@@ -132,7 +137,6 @@ void setup() {
 
     // Setup LED(s)
     led.begin();
-    led.setColor(1, 1, 1);
 
     // DNS
     MDNS.begin("ChickenManGame");
@@ -140,6 +144,7 @@ void setup() {
     // Web Server
     webServer.on("/", handleRoot);
     webServer.on("/index.html", handleRoot);
+    webServer.on("/points.html", handlePoints);
     webServer.onNotFound(handleNotFound);
 
     webServer.begin();
@@ -178,7 +183,7 @@ void loop() {
     if (connections) {
         led.blink(connections);
     } else {
-        led.setFlagColor(bird.getFlag());
+        led.setColor(bird.getFlag());
     }
 
     // Serial CLI

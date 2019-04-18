@@ -4,6 +4,8 @@
 // ========== Includes ========== //
 #include "Arduino.h" // digitalWrite, digitalRead
 
+#include "types.h"
+
 // From hardware.h
 extern const int LED_PIN_R;
 extern const int LED_PIN_G;
@@ -24,7 +26,7 @@ class LED {
     public:
         void begin();
         void setColor(int r, int g, int b);
-        void setFlagColor(int flag);
+        void setColor(TEAM flag);
         void blink(unsigned long interval);
         void blinkError();
 };

@@ -38,7 +38,7 @@ void Bird::createAP() {
 
     // Print infos
     Serial.println("--------------------------------------------");
-    Serial.printf("Chicken Level: %d\n", stats.level);
+    Serial.printf("Chicken Level: %s\n", DIFFICULTY[stats.level]);
     Serial.printf("Chicken ID:    %d\n", stats.id);
     Serial.printf("Channel:       %d\n", getChannel());
     Serial.printf("MAC-Address:   %s\n", WiFi.softAPmacAddress().c_str());
@@ -53,10 +53,7 @@ void Bird::updatePoints() {
     if (millis() - lastPointUpdate >= POINT_INTERVAL * 1000) {
         lastPointUpdate = millis();
 
-        if (stats.level > 3) stats.level = 3;
-        if (stats.flag > 2) stats.flag = 1;
-
-        if (stats.level != 3) { // Not locked
+        if (stats.level < LOCKED) {
             stats.points[stats.flag] += POINTS_PER_SECOND[stats.level];
         }
 
@@ -118,8 +115,8 @@ Bird::Bird() {
     stats.magic_num = MAGIC_NUM;
 
     stats.id    = 0;
-    stats.level = 0;
-    stats.flag  = 1;
+    stats.level = EASY;
+    stats.flag  = NONE;
 
     for (int i = 0; i<3; i++) stats.points[i] = 0;
 
@@ -155,47 +152,69 @@ int Bird::getConnections() {
     return WiFi.softAPgetStationNum();
 }
 
-void Bird::setFlag(unsigned int flag) {
-    if ((flag <= 2) && (stats.level < 3)) {
-        stats.flag = flag;
-        if (stats.level < 4) {
-            ++stats.level;
-            createAP();
-        }
+void Bird::setFlag(TEAM flag) {
+    stats.flag = flag;
+
+    switch (stats.level) {
+        case EASY:
+            stats.level = MEDIUM;
+            break;
+        case MEDIUM:
+            stats.level = HARD;
+            break;
+        case HARD:
+            stats.level = LOCKED;
+            break;
+        case LOCKED:
+            break;
     }
+
+    createAP();
 }
 
-int Bird::getPoints(unsigned int team) {
-    team = (team > 2) ? 1 : team;
-    return stats.points[team];
+int Bird::getPoints(TEAM team) {
+    return (team == NONE) ? 0 : stats.points[team];
 }
 
-String Bird::getPointsString() {
-    return '(' + String(stats.points[0]) + ',' + String(stats.points[1]) + ',' + String(stats.points[2]) + ')';
+String Bird::getPointsString(bool reset) {
+    String str = String(stats.points[0]) + ',' + String(stats.points[1]) + ',' + String(stats.points[2]);
+
+    if (reset) {
+        stats.points[0] = 0;
+        stats.points[1] = 0;
+        stats.points[2] = 0;
+    }
+
+    return str;
 }
 
-int Bird::getLevel() {
+LEVEL Bird::getLevel() {
     return stats.level;
 }
 
-int Bird::getFlag() {
+TEAM Bird::getFlag() {
     return stats.flag;
 }
 
-bool Bird::reset(String password) {
-    if (password == SUPER_SECRET) {
-        Serial.println("Resetting Game");
+bool Bird::resetGame(String password) {
+    Serial.print("Resetting Game...");
 
+    if (password == SUPER_SECRET) {
         for (int i = 0; i < 3; i++) stats.points[i] = 0;
 
-        stats.level = 0;
-        stats.flag  = 1;
+        stats.level = EASY;
+        stats.flag  = NONE;
 
         createID();
         createAP();
 
+        Serial.println("Done");
+
         return true;
     }
+
+    Serial.println("Wrong Password");
+
     return false;
 }
 
