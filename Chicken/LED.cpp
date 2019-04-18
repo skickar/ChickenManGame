@@ -19,11 +19,21 @@ void LED::setColor(int r, int g, int b) {
 }
 
 void LED::setColor(TEAM flag) {
-    setColor(flag == RED, flag == GREEN, flag == BLUE);
+    if (millis() - lastBlink >= 1000) {
+        lastBlink = millis();
+        if (flag == NONE) flag = (TEAM)random((int)RED, (int)NONE);
+        setColor(flag == RED, flag == GREEN, flag == BLUE);
+    }
 }
 
-void LED::blink(unsigned long interval) {
+void LED::blink(unsigned long interval, TEAM flag) {
     if (millis() - lastBlink >= 1000 / interval) {
+        /*if (flag == NONE) {
+            setColor(1, 1, 1);
+           } else {*/
+        setColor(flag);
+        // }
+
         if (blinked) {
             digitalWrite(LED_PIN_R, 0);
             digitalWrite(LED_PIN_G, 0);
@@ -32,23 +42,6 @@ void LED::blink(unsigned long interval) {
             digitalWrite(LED_PIN_R, ledR);
             digitalWrite(LED_PIN_G, ledG);
             digitalWrite(LED_PIN_B, ledB);
-        }
-
-        lastBlink = millis();
-        blinked   = !blinked;
-    }
-}
-
-void LED::blinkError() {
-    if (millis() - lastBlink >= 500) {
-        if (blinked) {
-            digitalWrite(LED_PIN_R, 0);
-            digitalWrite(LED_PIN_G, 0);
-            digitalWrite(LED_PIN_B, 0);
-        }  else {
-            digitalWrite(LED_PIN_R, 1);
-            digitalWrite(LED_PIN_G, 1);
-            digitalWrite(LED_PIN_B, 1);
         }
 
         lastBlink = millis();
