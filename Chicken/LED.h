@@ -27,7 +27,7 @@ class LED {
         void begin();
         void setColor(int r, int g, int b);
         void setColor(TEAM flag);
-        void blink(unsigned long interval, TEAM flag);
+        unsigned int blink(unsigned long interval, TEAM flag, unsigned int times = 0);
 };
 
 #endif /* ifndef LED_H */

@@ -21,30 +21,23 @@ void LED::setColor(int r, int g, int b) {
 void LED::setColor(TEAM flag) {
     if (millis() - lastBlink >= 1000) {
         lastBlink = millis();
-        if (flag == NONE) flag = (TEAM)random((int)RED, (int)NONE);
+        // if (flag == NONE) flag = (TEAM)random((int)RED, (int)NONE);
         setColor(flag == RED, flag == GREEN, flag == BLUE);
     }
 }
 
-void LED::blink(unsigned long interval, TEAM flag) {
-    if (millis() - lastBlink >= 1000 / interval) {
-        /*if (flag == NONE) {
-            setColor(1, 1, 1);
-           } else {*/
-        setColor(flag);
-        // }
-
+unsigned int LED::blink(unsigned long interval, TEAM flag, unsigned int times) {
+    if ((times) && (millis() - lastBlink >= 1000 / interval)) {
         if (blinked) {
-            digitalWrite(LED_PIN_R, 0);
-            digitalWrite(LED_PIN_G, 0);
-            digitalWrite(LED_PIN_B, 0);
+            setColor(0, 0, 0);
         }  else {
-            digitalWrite(LED_PIN_R, ledR);
-            digitalWrite(LED_PIN_G, ledG);
-            digitalWrite(LED_PIN_B, ledB);
+            if (flag == NONE) setColor(1, 1, 1);
+            setColor(flag);
         }
 
         lastBlink = millis();
         blinked   = !blinked;
+        return --times;
     }
+    return times;
 }

@@ -38,6 +38,7 @@ void Bird::createAP() {
 
     // Print infos
     Serial.println("--------------------------------------------");
+    Serial.printf("Flag:          %d\n", getFlag());
     Serial.printf("Chicken Level: %s\n", DIFFICULTY[stats.level]);
     Serial.printf("Chicken ID:    %d\n", stats.id);
     Serial.printf("Channel:       %d\n", getChannel());
@@ -68,7 +69,7 @@ void Bird::updatePoints() {
 void Bird::createID() {
     stats.id = random(0, NUM_PASSWORDS);
 
-    int s = random(1, 5);
+    int s = 2;//random(1, 5);
 
     Serial.printf("Delay for %d seconds\n", s);
 
