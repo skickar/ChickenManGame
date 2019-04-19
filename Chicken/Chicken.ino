@@ -39,9 +39,9 @@ Command   cmdPoints;
 Command   cmdReset;
 
 LED  led;
-Bird bird;                   // Game instance
+Bird bird; // Game instance
 
-unsigned long pointTime = 0; // Last time the chicken man gathered the eggs
+int pointBlinkCounter = 0;
 
 // ========== Global Functions ========== //
 String handleCLI(String input) {
@@ -72,7 +72,7 @@ String handleCLI(String input) {
                 return "Wrong team, mate!";
             }
         } else if (cmd == cmdPoints) {
-            pointTime = millis();
+            pointBlinkCounter = 4;
             return bird.getPointsString();
         } else if (cmd == cmdReset) {
             if (bird.resetGame(cmd.getArgument("pswd").getValue())) {
@@ -108,7 +108,7 @@ void handleRoot() {
 }
 
 void handlePoints() {
-    pointTime = millis();
+    pointBlinkCounter = 4;
     webServer.send(200, "text/html", bird.getPointsString());
 }
 
@@ -182,15 +182,17 @@ void loop() {
     // Update game (access point, server, ...)
     bird.update();
 
-    // Blink all LEDs when eggs are gathered
-    if (millis() - pointTime <= 2100) {
-        led.blink(3, NONE);
+    // Blink LED(s) when eggs are gathered
+    if (pointBlinkCounter) {
+        pointBlinkCounter = led.blink(8, bird.getFlag(), pointBlinkCounter);
     }
 
-    // Blink when devices are connected
-    else if (bird.getConnections()) {
+    /*
+       // Blink when devices are connected
+       else if (bird.getConnections()) {
         led.blink(bird.getConnections(), bird.getFlag());
-    }
+       }
+     */
 
     // Otherwise set the current flag color
     else {
