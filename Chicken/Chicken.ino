@@ -18,6 +18,7 @@
 // [ESP8266 Libraries]
  #include <ESP8266WebServer.h>
  #include <ESP8266mDNS.h>
+ #include <EEPROM.h>
 
 // [External Libraries]
  #include <SimpleCLI.h>
@@ -29,6 +30,9 @@
 #include "config.h"
 #include "hardware.h"
 #include "types.h"
+
+// ========== Constants ========== //
+#define BOOT_ADDR 3210
 
 // ========== Global Variables ========== //
 ESP8266WebServer webServer(80); // Web Server
@@ -132,6 +136,17 @@ void handleNotFound() {
 
 // ========== Setup ========== //
 void setup() {
+    uint8_t boots = 0;
+
+    EEPROM.begin(4095);
+    EEPROM.get(BOOT_ADDR, boots);
+    if (boots >= 3) {
+        for (int i = 0; i < 4096; i++) EEPROM.write(i, 0);
+        EEPROM.commit();
+    }
+    EEPROM.write(BOOT_ADDR, ++boots);
+    EEPROM.end();
+
     // Random seed
     randomSeed(os_random());
 
@@ -175,6 +190,11 @@ void setup() {
 
         ESP.restart();
     }
+
+    EEPROM.begin(4095);
+    EEPROM.put(BOOT_ADDR, 1);
+    EEPROM.commit();
+    EEPROM.end();
 }
 
 // ========== Loop ========== //
