@@ -141,7 +141,7 @@ void setup() {
     EEPROM.begin(4095);
     EEPROM.get(BOOT_ADDR, boots);
     if (boots >= 3) {
-        for (int i = 0; i < 4096; i++) EEPROM.write(i, 0);
+        for (int i = STATS_ADDR; i < 4; i++) EEPROM.write(i, 0);
         EEPROM.commit();
     }
     EEPROM.write(BOOT_ADDR, ++boots);
