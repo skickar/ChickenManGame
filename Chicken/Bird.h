@@ -24,7 +24,11 @@ extern const char* MEDIUM_PSWD[] PROGMEM;
 extern const char* HARD_PSWD[];
 
 // ========== Game Stats ========== //
+
+// Used to verify memory of game_stats objects
 #define MAGIC_NUM 123456789
+
+// Where to save the game_stats object in the EEPROM
 #define STATS_ADDR 1
 
 typedef struct game_stats {
@@ -54,10 +58,13 @@ class Bird {
         String getPassword();
         int getChannel();
 
+        void updatePoints();
+
+        void saveStats();
+        bool recoverStats();
+
         void createID();
         void createAP();
-
-        void updatePoints();
 
     public:
         Bird();

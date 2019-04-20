@@ -32,22 +32,25 @@
 #include "types.h"
 
 // ========== Constants ========== //
-#define BOOT_ADDR 3210
+#define BOOT_ADDR 3210 // Boot counter address in EEPROM
 
 // ========== Global Variables ========== //
-ESP8266WebServer webServer(80); // Web Server
-
-SimpleCLI cli;                  // Command Line Interface
-Command   cmdFlag;
-Command   cmdPoints;
-Command   cmdReset;
+ESP8266WebServer webServer(80);
 
 LED  led;
 Bird bird; // Game instance
 
 int pointBlinkCounter = 0;
 
+// Command Line Interface
+SimpleCLI cli;
+Command   cmdFlag;
+Command   cmdPoints;
+Command   cmdReset;
+
 // ========== Global Functions ========== //
+
+// CLI handler that is called via serial and the web interface
 String handleCLI(String input) {
     // Echo the input on the serial interface
     Serial.print("# ");
@@ -58,11 +61,15 @@ String handleCLI(String input) {
 
     // Check for commands
     if (cli.available()) {
+        // Get the command that was entered/parsed successfully
         Command cmd = cli.getCommand();
 
+        // Flag
         if (cmd == cmdFlag) {
+            // Get the team color that was entered
             String team = cmd.getArgument("team").getValue();
 
+            // Set flags and return a reply string
             if (team.equalsIgnoreCase("blue")) {
                 bird.setFlag(BLUE);
                 return "Why so blue?";
@@ -75,10 +82,16 @@ String handleCLI(String input) {
             } else {
                 return "Wrong team, mate!";
             }
-        } else if (cmd == cmdPoints) {
+        }
+
+        // Points
+        else if (cmd == cmdPoints) {
             pointBlinkCounter = 4;
             return bird.getPointsString();
-        } else if (cmd == cmdReset) {
+        }
+
+        // Reset
+        else if (cmd == cmdReset) {
             if (bird.resetGame(cmd.getArgument("pswd").getValue())) {
                 return "Resetted game stats!";
             };
@@ -90,35 +103,41 @@ String handleCLI(String input) {
         return cli.getError().toString();
     }
 
+    // Return empty string if everything else fails
     return String();
 }
 
+// Web interface - index.html
 void handleRoot() {
     String answer;
 
-    // If data was sent
-    if ((webServer.args() > 0) && webServer.hasArg("cmd")) {
+    // When a command argument was attached, run it through the CLI
+    if (webServer.hasArg("cmd")) {
         String input = webServer.arg("cmd");
         answer = handleCLI(input);
     }
 
     // Build HTML string
     String html(HTML_PREFIX);
-    html += answer;
+    html += answer; // Whatever the CLI returned
     html += String(HTML_SUFFIX);
 
     // Send HTML to user
     webServer.send(200, "text/html", html);
 }
 
+// Web interface - points.html
 void handlePoints() {
-    pointBlinkCounter = 4;
-    webServer.send(200, "text/html", bird.getPointsString());
+    pointBlinkCounter = 4;                                    // Blink 4 times
+    webServer.send(200, "text/html", bird.getPointsString()); // return points string
 }
 
+// Web interface - 404 Site Not Found
 void handleNotFound() {
+    // Build error message
     String message = "404 - Chicken Not Found :(\n\n";
 
+    // Attack infos about the URL and its arguments
     message += "URI: ";
     message += webServer.uri();
     message += "\nMethod: ";
@@ -131,21 +150,46 @@ void handleNotFound() {
         message += " " + webServer.argName(i) + ": " + webServer.arg(i) + "\n";
     }
 
+    // Send message to user
     webServer.send(404, "text/plain", message);
+}
+
+void checkBootCounter() {
+    EEPROM.begin(4095); // Start EEPROM
+
+    // Read out previous boot counter
+    uint8_t boots = 0;
+    EEPROM.get(BOOT_ADDR, boots);
+
+    // Counter too high, reset game stats
+    if (boots >= 3) {
+        // Only erase the magic_num that is used to check if the memory is valid
+        for (int i = STATS_ADDR; i < 4; i++) {
+            EEPROM.write(i, 0);
+        }
+    }
+
+    // Increment the boot counter and save it
+    EEPROM.write(BOOT_ADDR, ++boots);
+    EEPROM.commit();
+
+    EEPROM.end(); // End EEPROM
+}
+
+void resetBootCounter() {
+    EEPROM.begin(4095); // Start EEPROM
+
+    // Save boot counter as 1
+    EEPROM.put(BOOT_ADDR, 1);
+    EEPROM.commit();
+
+    EEPROM.end(); // End EEPROM
 }
 
 // ========== Setup ========== //
 void setup() {
-    uint8_t boots = 0;
-
-    EEPROM.begin(4095);
-    EEPROM.get(BOOT_ADDR, boots);
-    if (boots >= 3) {
-        for (int i = STATS_ADDR; i < 4; i++) EEPROM.write(i, 0);
-        EEPROM.commit();
-    }
-    EEPROM.write(BOOT_ADDR, ++boots);
-    EEPROM.end();
+    // Erase old stats, if resetted 3 times in a row
+    checkBootCounter();
 
     // Random seed
     randomSeed(os_random());
@@ -191,10 +235,8 @@ void setup() {
         ESP.restart();
     }
 
-    EEPROM.begin(4095);
-    EEPROM.put(BOOT_ADDR, 1);
-    EEPROM.commit();
-    EEPROM.end();
+    // Set boot counter to 1, to indicate that the the game has successfully started
+    resetBootCounter();
 }
 
 // ========== Loop ========== //
@@ -206,14 +248,6 @@ void loop() {
     if (pointBlinkCounter) {
         pointBlinkCounter = led.blink(8, bird.getFlag(), pointBlinkCounter);
     }
-
-    /*
-       // Blink when devices are connected
-       else if (bird.getConnections()) {
-        led.blink(bird.getConnections(), bird.getFlag());
-       }
-     */
-
     // Otherwise set the current flag color
     else {
         led.setColor(bird.getFlag());
