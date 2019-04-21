@@ -3,24 +3,6 @@
 
 // ========= Private ======== //
 
-// Builds SSID (i.e. "Chicken_" + "easy" + "_01"), depending on level and ID
-String Bird::getSSID() {
-    return String(SSID_PREFIX) + String(DIFFICULTY[stats.level]) + String(SSID_SUFFIX[stats.id]);
-}
-
-// Returns password, depending on level and ID
-String Bird::getPassword() {
-    if (stats.level == 3) return String(SUPER_SECRET);
-
-    const char** pswdList[] = { EASY_PSWD, MEDIUM_PSWD, HARD_PSWD };
-    return String(pswdList[stats.level][stats.id]);
-}
-
-// Returns channel, deoending on ID and MAX_CHANNEL
-int Bird::getChannel() {
-    return (stats.id % MAX_CHANNEL) + 1;
-}
-
 // Calculates points per team
 void Bird::updatePoints() {
     // Only update every givin interval (i.e. one second)
@@ -40,27 +22,36 @@ void Bird::updatePoints() {
 
 // Save game stats in EEPROM
 void Bird::saveStats() {
-    EEPROM.begin(4095); // Start EEPROM
+    EEPROMHelper::saveObject(EEPROM_SIZE, EEPROM_STATS_ADDR, stats);
 
-    // Write game stats
-    EEPROM.put(STATS_ADDR, stats);
-    EEPROM.commit();
+    /*
+       EEPROM.begin(4095); // Start EEPROM
 
-    EEPROM.end(); // End EEPROM
+       // Write game stats
+       EEPROM.put(EEPROM_STATS_ADDR, stats);
+       EEPROM.commit();
+
+       EEPROM.end(); // End EEPROM
+     */
 }
 
 // Recover game stats from EEPROM
 bool Bird::recoverStats() {
-    EEPROM.begin(4095); // Start EEPROM
-
-    // Read game stats from memory
     game_stats tmpStats;
-    EEPROM.get(STATS_ADDR, tmpStats);
 
-    EEPROM.end(); // End EEPROM
+    EEPROMHelper::getObject(EEPROM_SIZE, EEPROM_STATS_ADDR, tmpStats);
 
+    /*
+       EEPROM.begin(4095); // Start EEPROM
+
+       // Read game stats from memory
+       game_stats tmpStats;
+       EEPROM.get(EEPROM_STATS_ADDR, tmpStats);
+
+       EEPROM.end(); // End EEPROM
+     */
     // Check if memory valid
-    if (tmpStats.magic_num == MAGIC_NUM) {
+    if (tmpStats.magic_num == GAME_MAGIC_NUM) {
         stats = tmpStats; // Set game stats
         return true;      // Success
     }
@@ -154,11 +145,11 @@ void Bird::createID() {
 // ========= Public ========= //
 
 // Bird object constructor
-Bird::Bird() {
+Bird::Bird(int id, LEVEL level) {
     // Set game stats to default
-    stats.magic_num = MAGIC_NUM;
-    stats.id        = 0;
-    stats.level     = EASY;
+    stats.magic_num = GAME_MAGIC_NUM;
+    stats.id        = id;
+    stats.level     = level;
     stats.flag      = NONE;
 
     for (int i = 0; i<3; i++) stats.points[i] = 0;
@@ -176,8 +167,8 @@ void Bird::begin() {
     }
     // Otherwise generate new random ID (= new SSID and password too)
     else {
+        Serial.println("Creating new bird...");
         createID();
-        Serial.println("Created new bird");
     }
 
     // Create access point
@@ -189,9 +180,64 @@ void Bird::update() {
     updatePoints();
 }
 
+// Builds SSID (i.e. "Chicken_" + "easy" + "_01"), depending on level and ID
+String Bird::getSSID() const {
+    return String(SSID_PREFIX) + String(DIFFICULTY[stats.level]) + String(SSID_SUFFIX[stats.id]);
+}
+
+// Returns password, depending on level and ID
+String Bird::getPassword() const {
+    if (stats.level == 3) return String(SUPER_SECRET);
+
+    const char** pswdList[] = { EASY_PSWD, MEDIUM_PSWD, HARD_PSWD };
+    return String(pswdList[stats.level][stats.id]);
+}
+
+// Returns channel, deoending on ID and MAX_CHANNEL
+int Bird::getChannel() const {
+    return (stats.id % MAX_CHANNEL) + 1;
+}
+
 // Returns number of connected clients
-int Bird::getConnections() {
+int Bird::getConnections() const {
     return WiFi.softAPgetStationNum();
+}
+
+// Returns the number of points from a given team
+int Bird::getPoints(TEAM team) const {
+    return (team == NONE) ? 0 : stats.points[team];
+}
+
+// Returns string with the points of all teams i.e. "12,0,58"
+String Bird::getPointsString() const {
+    return String(stats.points[0]) + ',' + String(stats.points[1]) + ',' + String(stats.points[2]);
+}
+
+String Bird::getPointsString(bool reset) {
+    String pointsStr = getPointsString();
+
+    if (reset) {
+        stats.points[0] = 0;
+        stats.points[1] = 0;
+        stats.points[2] = 0;
+    }
+
+    return pointsStr;
+}
+
+// Returns current level/difficulty of this game piece
+LEVEL Bird::getLevel() const {
+    return stats.level;
+}
+
+// Returns the team that is holding this game piece/flag
+TEAM Bird::getFlag() const {
+    return stats.flag;
+}
+
+// Checks for errors
+bool Bird::errored() const {
+    return error;
 }
 
 // Sets a new flag and restarts the access point
@@ -213,34 +259,6 @@ void Bird::setFlag(TEAM flag) {
     }
 
     createAP();
-}
-
-// Returns the number of points from a given team
-int Bird::getPoints(TEAM team) {
-    return (team == NONE) ? 0 : stats.points[team];
-}
-
-// Returns string with the points of all teams i.e. "12,0,58"
-String Bird::getPointsString(bool reset) {
-    String str = String(stats.points[0]) + ',' + String(stats.points[1]) + ',' + String(stats.points[2]);
-
-    if (reset) {
-        stats.points[0] = 0;
-        stats.points[1] = 0;
-        stats.points[2] = 0;
-    }
-
-    return str;
-}
-
-// Returns current level/difficulty of this game piece
-LEVEL Bird::getLevel() {
-    return stats.level;
-}
-
-// Returns the team that is holding this game piece/flag
-TEAM Bird::getFlag() {
-    return stats.flag;
 }
 
 // Resets game stats
@@ -268,9 +286,4 @@ bool Bird::resetGame(String password) {
     Serial.println("Wrong Password");
 
     return false;
-}
-
-// Checks for errors
-bool Bird::errored() {
-    return error;
 }

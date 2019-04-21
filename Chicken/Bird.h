@@ -1,11 +1,10 @@
 #ifndef BIRD_H
 #define BIRD_H
-
 // ========== Includes ========== //
 #include <Arduino.h>     // String Class
 #include <ESP8266WiFi.h> // Scan WiFi
-#include <EEPROM.h>      // Save stats
 
+#include "EEPROMHelper.h"
 #include "types.h"       // TEAM, LEVEL enums
 
 // From config.h
@@ -23,25 +22,27 @@ extern const char* EASY_PSWD[] PROGMEM;
 extern const char* MEDIUM_PSWD[] PROGMEM;
 extern const char* HARD_PSWD[];
 
+// From hardware.h
+extern const int EEPROM_SIZE;
+extern const int EEPROM_STATS_ADDR;
+
 // ========== Game Stats ========== //
 
 // Used to verify memory of game_stats objects
-#define MAGIC_NUM 123456789
-
-// Where to save the game_stats object in the EEPROM
-#define STATS_ADDR 1
+#define GAME_MAGIC_NUM 1234567890
 
 typedef struct game_stats {
-    unsigned int magic_num; // Used to safely read and write to EEPROM
+    unsigned int magic_num : 32; // Used to safely read and write to EEPROM
 
-    unsigned int id;        // Random generated ID
-    LEVEL        level;     // 0: Easy, 1: Medium, 2: Hard, 3: Locked
-    TEAM         flag;      // 0: Red, 1: Green, 3: Blue
+    unsigned int id : 8;         // Random generated ID
 
-    unsigned int points[3]; // Red-Points, Green-Points, Blue-Points
+    LEVEL level;                 // 0: Easy, 1: Medium, 2: Hard, 3: Locked
+    TEAM  flag;                  // 0: Red, 1: Green, 3: Blue
 
-    char ssid[33];          // SSID of access point
-    char pswd[65];          // Password of access point
+    unsigned int points[3];      // Red-Points, Green-Points, Blue-Points
+
+    char ssid[33];               // SSID of access point
+    char pswd[65];               // Password of access point
 } game_stats;
 
 // ========== Bird Class ========== //
@@ -54,10 +55,6 @@ class Bird {
 
         bool error = false;
 
-        String getSSID();
-        String getPassword();
-        int getChannel();
-
         void updatePoints();
 
         void saveStats();
@@ -67,24 +64,31 @@ class Bird {
         void createAP();
 
     public:
-        Bird();
+        Bird(int id = 0, LEVEL level = EASY);
 
         void begin();
         void update();
 
-        int getConnections();
+        // Getter
+        String getSSID() const;
+        String getPassword() const;
+        int getChannel() const;
 
+        int getConnections() const;
+
+        int getPoints(TEAM team) const;
+        String getPointsString() const;
+        String getPointsString(bool reset);
+
+        LEVEL getLevel() const;
+        TEAM getFlag() const;
+
+        bool errored() const;
+
+        // Setter
         void setFlag(TEAM flag);
 
-        int getPoints(TEAM team);
-        String getPointsString(bool reset = true);
-
-        LEVEL getLevel();
-        TEAM getFlag();
-
         bool resetGame(String password);
-
-        bool errored();
 };
 
 
