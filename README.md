@@ -90,6 +90,27 @@ This game requires three elements to play:
 * The game piece will set the LED to your team color and shut down the access point. The AP will start up again with a new password, allowing a player from another team to attempt to crack the new password and set the LED flag to their own color.
 * For best results, use several game pieces to keep the game interesting.
 
+              .".".".
+            (`       `)               _.-=-.
+             '._.--.-;             .-`  -'  '.
+            .-'`.o )  \           /  .-_.--'  `\
+           `;---) \    ;         /  / ;' _-_.-' `
+             `;"`  ;    \        ; .  .'   _-' \
+              (    )    |        |  / .-.-'    -`
+               '-.-'     \       | .' ` '.-'-\`
+                /_./\_.|\_\      ;  ' .'-'.-.
+                /         '-._    \` /  _;-,
+               |         .-=-.;-._ \  -'-,
+               \        /      `";`-`,-"`)
+                \       \     '-- `\.\
+                 '.      '._ '-- '--'/
+                   `-._     `'----'`;
+                       `"""--.____,/
+                              \\  \
+                              // /`
+                          ___// /__
+                        (`(`(---"-`)
+
 ## Project Goals
 This project has several goals, broken down into behavior for each game element:
 
