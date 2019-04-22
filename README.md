@@ -45,6 +45,19 @@ This game requires three elements to play:
 
 ## How to play
 
+                                    .=""=.
+                                   / _  _ \
+                                  |  d  b  |
+                                  \   /\   /             ,
+                                 ,/'-=\/=-'\,    |\   /\/ \/|   ,_
+                                / /        \ \   ; \/`     '; , \_',
+                               | /          \ |   \        / 
+                               \/ \        / \/    '.    .'    /`.
+                                   '.    .'          `~~` , /\ `"`
+                                   _|`~~`|_              .  `"
+                                   /|\  /|\
+
+
 * To play, open Wireshark or Airodump-ng and search for the channel the game piece has created an access point on.
 * Begin capturing Wi-Fi traffic from the access point, apply filters to show when 4-way handshake is captured from the helper joining the game piece access point. 
 * Save the captured handshake as a .CAP file, run aircrack-ng or another cracking program against the game password list to brute-force the password to the access point.
