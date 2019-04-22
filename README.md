@@ -1,6 +1,4 @@
-  >O__/  \__O<  The Chicken Man Game
-    \/    \/
-    ""    ""
+The Chicken Man Game
 ======
 
       ,~.
