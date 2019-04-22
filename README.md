@@ -22,11 +22,11 @@
                                   
 
 
-The Chicken Man Wi-Fi hacking game is a WPA/WPA2 cracking game for CTF's and hackerspaces.
+The Chicken Man Wi-Fi hacking game is a WPA/WPA2 cracking game for CTF's and hackerspaces. It is designed to use cheap hardware to help beginners practice Wi-Fi hacking and requires no deauthing.
 
 ![Who will be the chicken man?](https://i.imgur.com/WOdqsh2.jpg "WHO WILL BE THE CHICKEN MAN")
 
-The purpose of this game is to have an ultra low-cost microcontroller based Wi-Fi hacking game for beginners.
+The purpose of this project is to use ultra low-cost microcontrollers to create a Wi-Fi hacking game for beginners.
 It is designed to be easy to set up, and requires no deauthing to practice. It has been tested on the D1 mini and NodeMCU.
  
 
@@ -38,15 +38,32 @@ It is designed to be easy to set up, and requires no deauthing to practice. It h
                       '-.__ /                       '-.__ /
                        _/  `\                        _/  `\
                       ^`   ^`                       ^`   ^`
+## How Wi-Fi Hacking Works
+
+There are several ways to get the password to a WPA2 Wi-Fi network. These include:
+* Cracking the WPS Setup Pin
+* Tricking the user into giving it to you
+* Capturing a handshake and cracking it
+
+We'll be focusing on the last method, known as WPA2 handshake cracking. To crack a Wi-Fi password, you must listen in on the traffic of a device connecting to the network you are targeting. We'll be using two ESP8266 microcontrollers to set this up. One ESP8266 will create a WPA2 encrypted Wi-Fi access point, and the second ESP8266 will join the access point with the correct password, generating a handshake that a hacker can capture.
+
+Once we capture the handshake from one ESP8266 connecting to the other, we can crack it with a good password list and a program like Aircrack-ng, Pyrit, or Hashcat.
+
+The process looks like this:
+1) ESP8266 A creates a Wi-Fi network with password "password123456"
+2) ESP8266 B joins the Wi-Fi network over and over, creating handshakes for the hacker to capture
+3) The hacker captures a handshake while listening in with a tool like airodump-ng and saves the .cap file
+4) The hacker runs aircrack-ng with a wordlist containing "password123456", and cracks the network password
 
 
-## Behavior
+## How The Game Works
+To play the game, you need two game pieces: The Chicken Man, and one (or several) Chickens.
 
-The Chicken Man game consists of two elements, a game piece and a helper. 
+CHICKENS:
+Each Chicken creates a WPA2 encrypted Wi-Fi network containing the word "Chicken" and the level of password difficulty. "Chicken_Easy_01" would be set with a very weak, easy to guess password, while "Chicken_Hard_09" would be set with one that is more difficult. The goal of the hacker is to join the Chicken's Wi-Fi network, go to the web portal at 192.168.4.1, and set the LED the color of their team (red, green, or blue)
 
-1. The role of the game piece is to create a WPA Wi-Fi access point with a weak password, and host a web interface for players to access. The web interface allows the player to set the LED of the game piece to the color of their team.
-2. The role of the helper is to join the access point created by the game piece. The helper knows the password to the Wi-Fi network the game piece creates, and while connecting to each game piece, will generate WPA handshakes for the player to crack.
-
+CHICKEN MAN:
+The Chicken Man knows the password to every possible chicken that can be created, and will join the Wi-Fi network of any Chicken automatically. A hacker can listen in when the Chicken Man joins the network, save the handshake, and try to crack it to gain access to the Wi-Fi network. If the hacker succeeds and sets the Chicken's LED to their team color, the Chicken man saves the number of points awarded from each captured Chicken and displays the winning team's color.
 
                           ,.
                          (\(\)
@@ -60,11 +77,19 @@ The Chicken Man game consists of two elements, a game piece and a helper.
                 //`        `\\
                //
               `\=
+              
+To win: 
+* Follow the Chicken Man as he visits his Chickens, and save the captured handshake
+* Crack the captured handshake with a password list
+* Join the Wi-Fi network of the Chicken and navigate to the web interface
+* Click on your team color to set your team's flag 
+* Every second your flag is set on a Chicken, your team gets points
+* The higher the difficulty of the Chicken's password, the more points you get when you capture it
+
 ## Required Hardware
 
 This game requires three elements to play:
-* An ESP8266 (reccomended D1 mini or NodeMCU) to serve as the game piece and create the access point, with an RGB LED or three single LED's.
-* An ESP8266 to join the network created by the game piece, generating WPA handshakes.
+* Two ESP8266 (reccomended D1 mini or NodeMCU) to serve as the game piece and create the access point, with an RGB LED or three single LED's.
 * A Raspberry Pi or other Linux computer with a wireless network adapter capible of packet capture. 
 
 
@@ -83,15 +108,15 @@ This game requires three elements to play:
                                    /|\  /|\
 
 
-* To play, open Wireshark or Airodump-ng and search for the channel the game piece has created an access point on.
-* Begin capturing Wi-Fi traffic from the access point, apply filters to show when 4-way handshake is captured from the helper joining the game piece access point. 
-* Save the captured handshake as a .CAP file, run aircrack-ng or another cracking program against the game password list to brute-force the password to the access point.
-* Try accessing the Wi-Fi access point of the game piece with the cracked password. If it works, scan the network to find the IP address of the game piece webserver
-* Open the game piece webserver in a browser, and (if you are the red team) click the "Red Team" button to turn the LED of the game piece to your team's color.
+* To play, open Wireshark or Airodump-ng and search for the channel number that the Chicken has created it's Wi-Fi network on.
+* Begin capturing Wi-Fi traffic on that channel, apply filters to eliminate other traffic, and wait for the 4-way handshake to be captured from the Chicken Man joining the Chicken's network. 
+* Save the captured handshake as a .CAP file, run aircrack-ng or another cracking program against the a password list to brute-force the password to the access point.
+* Try accessing the Wi-Fi access point of the Chicken with the cracked password. If it works, scan the network to find the IP address of the Chicken's webserver (should be 192.168.4.1).
+* Open the Chicken's webserver in a browser, and (if you are the red team) click the "Red Team" button to turn the LED of the Chicken to your team's color.
 
 ![Who will be the chicken man?](https://i.imgur.com/CWArhK1.jpg "Set your team color!")
 
-* The game piece will set the LED to your team color and shut down the access point. The AP will start up again with a new password, allowing a player from another team to attempt to crack the new password and set the LED flag to their own color.
+* The Chicken will set the LED to your team color and shut down the access point. The Chicken will start up again with a new password with higher difficulty, allowing a player from another team to attempt to crack the new password and set the LED flag to their own color.
 * For best results, use several game pieces to keep the game interesting.
 
               .".".".
