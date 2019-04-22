@@ -88,9 +88,9 @@ To win:
 
 ## Required Hardware
 
-This game requires three elements to play:
+This game requires two elements to play:
 * Two ESP8266 (reccomended D1 mini or NodeMCU) to serve as the game piece and create the access point, with an RGB LED or three single LED's.
-* A Raspberry Pi or other Linux computer with a wireless network adapter capible of packet capture. 
+* A Raspberry Pi or other Linux computer with a wireless network adapter capible of packet capture. Players join this computer over SSH to play the game.
 
 
 ## How to play
