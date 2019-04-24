@@ -90,7 +90,7 @@ bool getPassFromSSID(String ssid, const char*& pass){
       difficulty = 2;
       seed = ssid.substring(13, 17);
     }
-    else if(ssid.length() == 17 && ssid.substring(0,15)=="CHICKEN_COOKED_"){
+    else if(ssid.length() == 17 && ssid.substring(0,15)=="Chicken_Cooked_"){
       difficulty = 3;
       seed = '0';
     }

@@ -33,7 +33,7 @@ const char* DIFFICULTY[] PROGMEM = {
     "Easy",
     "Medium",
     "Hard",
-    "COOKED"
+    "Cooked"
 };
 
 // SSID Prefix
