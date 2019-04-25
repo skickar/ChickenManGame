@@ -3,7 +3,7 @@
 // ========== Global (but not really) Variables ========== //
 ESP8266WebServer webServer(80);
 
-// ========== Global (but not really) Funcions ========== //
+// ========== Global (but not really) Functions ========== //
 // index.html
 void handleRoot() {
     String answer;
