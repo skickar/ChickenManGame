@@ -71,14 +71,27 @@ void Man::addScore(String payload) {
     String gStr;
     String bStr;
 
-    rStr = payload.substring(0, payload.indexOf(','));
-    payload.remove(0, payload.indexOf(','));
+    int comma = 0;
 
-    gStr = payload.substring(0, payload.indexOf(','));
-    payload.remove(0, payload.indexOf(','));
+    for (int i = 0; i<payload.length(); i++) {
+        char c = payload.charAt(i);
 
-    bStr    = payload;
-    payload = String();
+        if (c == ',') {
+            ++comma;
+        } else {
+            switch (comma) {
+                case 0:
+                    rStr += c;
+                    break;
+                case 1:
+                    gStr += c;
+                    break;
+                case 2:
+                    bStr += c;
+                    break;
+            }
+        }
+    }
 
     stats.points[0] += rStr.toInt();
     stats.points[1] += gStr.toInt();
@@ -139,7 +152,7 @@ void Man::update() {
 
         bool chick = isAChicken(ssid, bssid);
 
-        Serial.printf("%-32s - %s\n", ssid.c_str(), chick ? "Chicken" : "No Chicken");
+        Serial.printf("%-32s - %s\n", ssid.c_str(), chick ? "Chicken" : "WORTHLESS!");
 
         if (chick) {
             String password(getPassword(bssid));
@@ -160,7 +173,7 @@ void Man::update() {
                 else delay(100);
             }
 
-            Serial.println("Getting score...");
+            Serial.print("Getting score...");
 
             // Open URL to get points
             http.begin(client, "http://192.168.4.1/points.html");
