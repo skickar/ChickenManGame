@@ -200,7 +200,7 @@ void loop() {
         man.update();
         led.setColor(man.getFlag());
 
-        Serial.println("Going to sleep for 30s...zZzZ");
-        delay(30000);
+        Serial.println("Going to sleep for 10s...zZzZ");
+        delay(10000);
     }
 }
