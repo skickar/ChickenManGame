@@ -20,6 +20,7 @@
 
 // [Local files]
 #include "Bird.h"
+#include "Man.h"
 #include "LED.h"
 #include "Web.h"
 #include "EEPROMHelper.h"
@@ -30,8 +31,9 @@
 
 // ========== Global Variables ========== //
 
-LED  led;  // LED
 Bird bird; // Chicken game instance
+Man  man;  // Chicken man
+LED  led;  // LED
 Web  web;  // Web interface
 
 // Command Line Interface
@@ -41,15 +43,12 @@ Command   cmdPoints;
 Command   cmdReset;
 
 int pointBlinkCounter = 0;
+GAME_TYPE type        = NO_TYPE;
 
 // ========== Global Functions ========== //
 
 // CLI handler that is called via serial and the web interface
 String handleCLI(String input) {
-    // Echo the input on the serial interface
-    Serial.print("# ");
-    Serial.println(input);
-
     // Parse input
     cli.parse(input);
 
@@ -59,7 +58,7 @@ String handleCLI(String input) {
         Command cmd = cli.getCommand();
 
         // Flag
-        if (cmd == cmdFlag) {
+        if ((cmd == cmdFlag) && (type == CHICKEN)) {
             // Get the team color that was entered
             String team = cmd.getArgument("team").getValue();
 
@@ -79,13 +78,13 @@ String handleCLI(String input) {
         }
 
         // Points
-        else if (cmd == cmdPoints) {
+        else if ((cmd == cmdPoints) && (type == CHICKEN)) {
             pointBlinkCounter = 4;
             return bird.getPointsString(true);
         }
 
         // Reset
-        else if (cmd == cmdReset) {
+        else if ((cmd == cmdReset) && (type == CHICKEN)) {
             if (bird.resetGame(cmd.getArgument("pswd").getValue())) {
                 return "Resetted game stats!";
             };
@@ -103,6 +102,13 @@ String handleCLI(String input) {
 
 // ========== Setup ========== //
 void setup() {
+    // Start Serial
+    Serial.begin(SERIAL_BAUD_RATE);
+    Serial.println("Starting");
+
+    // Random seed
+    randomSeed(os_random());
+
     // If resetted 3 times in a row
     if (!EEPROMHelper::checkBootNum(EEPROM_SIZE, EEPROM_BOOT_ADDR)) {
         // Erase (overwrite) old stats
@@ -110,15 +116,11 @@ void setup() {
         EEPROMHelper::saveObject(EEPROM_SIZE, EEPROM_STATS_ADDR, emptyStats);
     }
 
-    // Random seed
-    randomSeed(os_random());
-
-    // Start Serial
-    Serial.begin(SERIAL_BAUD_RATE);
-    Serial.println("Starting Bird");
-
     // Setup LED(s)
     led.begin();
+
+    // Setup Switch
+    pinMode(SWITCH_PIN, INPUT_PULLUP);
 
     // CLI
     cmdFlag = cli.addCommand("flag,color,led");
@@ -129,22 +131,38 @@ void setup() {
     cmdReset = cli.addCommand("reset");
     cmdReset.addArgument("p/assword,pswd");
 
-    // Setup Game Access Point
-    bird.begin();
+    if (digitalRead(SWITCH_PIN) == LOW) {
+        Serial.println("Mode: Chicken Man");
 
-    // If something went wrong, blink like crazy for 5s and then restart
-    if (bird.errored()) {
-        unsigned long startTime = millis();
+        type = CHICKEN_MAN;
 
-        while (millis() - startTime >= 5000) {
-            led.blink(10, NONE);
+        // Make sure it's in station mode
+        WiFi.mode(WIFI_STA);
+        WiFi.disconnect();
+
+        man.begin();
+    } else {
+        Serial.println("Mode: Chicken");
+
+        type = CHICKEN;
+
+        // Setup Game Access Point
+        bird.begin();
+
+        // If something went wrong, blink like crazy for 5s and then restart
+        if (bird.errored()) {
+            unsigned long startTime = millis();
+
+            while (millis() - startTime >= 5000) {
+                led.blink(10, NO_TEAM);
+            }
+
+            ESP.restart();
         }
 
-        ESP.restart();
+        // Start web interface
+        web.begin();
     }
-
-    // Start web interface
-    web.begin();
 
     // Set boot counter back to 1
     EEPROMHelper::resetBootNum(EEPROM_SIZE, EEPROM_BOOT_ADDR);
@@ -152,23 +170,37 @@ void setup() {
 
 // ========== Loop ========== //
 void loop() {
-    // Update game (access point, server, ...)
-    bird.update();
+    if (type == CHICKEN) {
+        // Update game (access point, server, ...)
+        bird.update();
 
-    // Blink LED(s) when eggs are gathered
-    if (pointBlinkCounter) {
-        pointBlinkCounter = led.blink(8, bird.getFlag(), pointBlinkCounter);
-    }
-    // Otherwise set the current flag color
-    else {
-        led.setColor(bird.getFlag());
-    }
+        // Blink LED(s) when eggs are gathered
+        if (pointBlinkCounter) {
+            pointBlinkCounter = led.blink(8, bird.getFlag(), pointBlinkCounter);
+        }
+        // Otherwise set the current flag color
+        else {
+            led.setColor(bird.getFlag());
+        }
 
-    // Serial CLI
-    if (Serial.available()) {
-        Serial.println(handleCLI(Serial.readStringUntil(SERIAL_DELIMITER)));
-    }
+        // Serial CLI
+        if (Serial.available()) {
+            String input = Serial.readStringUntil(SERIAL_DELIMITER);
 
-    // Web server
-    web.update();
+            // Echo the input on the serial interface
+            Serial.print("# ");
+            Serial.println(input);
+
+            Serial.println(handleCLI(input));
+        }
+
+        // Web server
+        web.update();
+    } else {
+        man.update();
+        led.setColor(man.getFlag());
+
+        Serial.println("Going to sleep for 30s...zZzZ");
+        delay(30000);
+    }
 }

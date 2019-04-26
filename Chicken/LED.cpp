@@ -21,7 +21,6 @@ void LED::setColor(int r, int g, int b) {
 void LED::setColor(TEAM flag) {
     if (millis() - lastBlink >= 1000) {
         lastBlink = millis();
-        // if (flag == NONE) flag = (TEAM)random((int)RED, (int)NONE);
         setColor(flag == RED, flag == GREEN, flag == BLUE);
     }
 }
@@ -31,7 +30,7 @@ unsigned int LED::blink(unsigned long interval, TEAM flag, unsigned int times) {
         if (blinked) {
             setColor(0, 0, 0);
         }  else {
-            if (flag == NONE) setColor(1, 1, 1);
+            if (flag == NO_TEAM) setColor(1, 1, 1);
             setColor(flag);
         }
 

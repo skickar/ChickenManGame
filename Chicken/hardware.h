@@ -11,6 +11,10 @@ const int LED_PIN_G = 4;
 // D3
 const int LED_PIN_B = 0;
 
+// [Switch]
+// D8
+const int SWITCH_PIN = 15;
+
 // [UART]
 const unsigned int SERIAL_BAUD_RATE = 115200;
 const char SERIAL_DELIMITER         = '\n';

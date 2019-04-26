@@ -1,0 +1,188 @@
+// ========== Includes ========== //
+#include "Man.h"
+
+// ========= Private ======== //
+
+// Save game stats in EEPROM
+void Man::saveStats() {
+    EEPROMHelper::saveObject(EEPROM_SIZE, EEPROM_STATS_ADDR, stats);
+}
+
+// Recover game stats from EEPROM
+bool Man::recoverStats() {
+    game_stats tmpStats;
+
+    EEPROMHelper::getObject(EEPROM_SIZE, EEPROM_STATS_ADDR, tmpStats);
+
+    // Check if memory valid
+    if ((tmpStats.magic_num == GAME_MAGIC_NUM) && (tmpStats.mode == CHICKEN_MAN)) {
+        stats = tmpStats; // Set game stats
+        return true;      // Success
+    }
+
+    return false;         // Failed
+}
+
+bool Man::isAChicken(String ssid, uint8_t* bssid) {
+    bool bssidValid = (bssid[0] == 0x18) && (bssid[1] == 0xFE) && (bssid[2] == 0x34) && (bssid[3] == 0x00);
+
+    if (!bssidValid) return false;
+
+    unsigned int level = bssid[4];
+    unsigned int id    = bssid[5];
+
+    String prefix(SSID_PREFIX);
+    String difficulty(DIFFICULTY[level]);
+    String suffix(SSID_SUFFIX[id]);
+
+    int prefixPos     = ssid.indexOf(prefix);
+    int difficultyPos = ssid.indexOf(difficulty);
+    int suffixPos     = ssid.indexOf(suffix);
+
+    bool ssidValid = (prefixPos == 0) && (difficultyPos > 0) && (suffixPos > 0) &&
+                     ((unsigned int)difficultyPos == prefix.length()) &&
+                     ((unsigned int)suffixPos == (unsigned int)difficultyPos + difficulty.length());
+
+    return ssidValid;
+}
+
+String Man::getPassword(uint8_t* bssid) {
+    LEVEL level     = (LEVEL)bssid[4];
+    unsigned int id = bssid[5];
+
+    if (id <= NUM_PASSWORDS) {
+        switch (level) {
+            case EASY:
+                return String(EASY_PSWD[id]);
+            case MEDIUM:
+                return String(MEDIUM_PSWD[id]);
+            case HARD:
+                return String(HARD_PSWD[id]);
+            case LOCKED:
+                return String(SUPER_SECRET);
+        }
+    }
+
+    return String();
+}
+
+void Man::addScore(String payload) {
+    String rStr;
+    String gStr;
+    String bStr;
+
+    rStr = payload.substring(0, payload.indexOf(','));
+    payload.remove(0, payload.indexOf(','));
+
+    gStr = payload.substring(0, payload.indexOf(','));
+    payload.remove(0, payload.indexOf(','));
+
+    bStr    = payload;
+    payload = String();
+
+    stats.points[0] += rStr.toInt();
+    stats.points[1] += gStr.toInt();
+    stats.points[2] += bStr.toInt();
+
+    if (stats.points[0] > stats.points[(int)getFlag()]) stats.flag = RED;
+    else if (stats.points[1] > stats.points[(int)getFlag()]) stats.flag = GREEN;
+    else if (stats.points[2] > stats.points[(int)getFlag()]) stats.flag = BLUE;
+
+    saveStats();
+
+    Serial.printf("Score = (%d,%d,%d)\n", stats.points[0], stats.points[1], stats.points[2]);
+}
+
+// ========= Public ========= //
+
+// Man object constructor
+Man::Man() {
+    // Set game stats to default
+    stats.magic_num = GAME_MAGIC_NUM;
+
+    stats.mode = CHICKEN_MAN;
+
+    stats.id = 0;
+
+    stats.level = EASY;
+
+    stats.flag = NO_TEAM;
+
+    for (int i = 0; i<3; i++) stats.points[i] = 0;
+
+    for (int i = 0; i<33; i++) stats.ssid[i] = '\0';
+
+    for (int i = 0; i<65; i++) stats.pswd[i] = '\0';
+}
+
+// Starts Chicken Man
+void Man::begin() {
+    // Try to recover previous game stats
+    if (recoverStats()) {
+        Serial.println("Revived Chicken Man");
+    } else {
+        Serial.println("Created new Chicken Man");
+    }
+}
+
+// Updates Chicken Man
+void Man::update() {
+    Serial.println("Scanning for Networks");
+    // scan for networks
+    int n = WiFi.scanNetworks();
+
+    // iterate through networks, connecting to chickens to get point data
+    // this will also generate handshakes
+    for (int i = 0; i < n; i++) {
+        String   ssid(WiFi.SSID(i));
+        uint8_t* bssid = WiFi.BSSID(i);
+
+        bool chick = isAChicken(ssid, bssid);
+
+        Serial.printf("%-32s - %s\n", ssid.c_str(), chick ? "Chicken" : "No Chicken");
+
+        if (chick) {
+            String password(getPassword(bssid));
+
+            Serial.printf("Connecting to '%s' with password '%s'\n", ssid.c_str(), password.c_str());
+
+            WiFi.begin(ssid.c_str(), password.c_str());
+            WiFiClient client;
+
+            unsigned long startTime = millis();
+
+            // Try to connect for 5s
+            while (WiFi.status() != WL_CONNECTED) {
+                if (millis() - startTime > 5000) {
+                    Serial.println("Couldn't connect :(");
+                    return;
+                }
+                else delay(100);
+            }
+
+            Serial.println("Getting score...");
+
+            // Open URL to get points
+            http.begin(client, "http://192.168.4.1/points.html");
+
+            int httpCode   = http.GET();
+            String payload = http.getString();
+
+            if (httpCode > 0) {
+                Serial.printf("(%s)\n", payload.c_str());
+                addScore(payload);
+            } else {
+                Serial.printf("ERROR %d\n", httpCode);
+            }
+        }
+    }
+}
+
+int Man::getScore(TEAM team) {
+    if (team == NO_TEAM) return 0;
+    return stats.points[(int)team];
+}
+
+TEAM Man::getFlag() {
+    return stats.flag;
+}

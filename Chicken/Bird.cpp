@@ -23,16 +23,6 @@ void Bird::updatePoints() {
 // Save game stats in EEPROM
 void Bird::saveStats() {
     EEPROMHelper::saveObject(EEPROM_SIZE, EEPROM_STATS_ADDR, stats);
-
-    /*
-       EEPROM.begin(4095); // Start EEPROM
-
-       // Write game stats
-       EEPROM.put(EEPROM_STATS_ADDR, stats);
-       EEPROM.commit();
-
-       EEPROM.end(); // End EEPROM
-     */
 }
 
 // Recover game stats from EEPROM
@@ -41,17 +31,8 @@ bool Bird::recoverStats() {
 
     EEPROMHelper::getObject(EEPROM_SIZE, EEPROM_STATS_ADDR, tmpStats);
 
-    /*
-       EEPROM.begin(4095); // Start EEPROM
-
-       // Read game stats from memory
-       game_stats tmpStats;
-       EEPROM.get(EEPROM_STATS_ADDR, tmpStats);
-
-       EEPROM.end(); // End EEPROM
-     */
     // Check if memory valid
-    if (tmpStats.magic_num == GAME_MAGIC_NUM) {
+    if ((tmpStats.magic_num == GAME_MAGIC_NUM) && (tmpStats.mode == CHICKEN)) {
         stats = tmpStats; // Set game stats
         return true;      // Success
     }
@@ -81,6 +62,11 @@ void Bird::createAP() {
 
     // Set IP Adress, Gateway and Subnetmask
     WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
+
+    // Generate and set MAC address (BSSID) of access point
+    uint8_t mac[6];
+    getMacAddress(mac);
+    wifi_set_macaddr(SOFTAP_IF, mac);
 
     // Start access point
     WiFi.softAP(stats.ssid, stats.pswd, getChannel(), HIDDEN_SSID && stats.level == 2, MAX_CONNECTIONS);
@@ -148,9 +134,14 @@ void Bird::createID() {
 Bird::Bird(int id, LEVEL level) {
     // Set game stats to default
     stats.magic_num = GAME_MAGIC_NUM;
-    stats.id        = id;
-    stats.level     = level;
-    stats.flag      = NONE;
+
+    stats.mode = CHICKEN;
+
+    stats.id = id;
+
+    stats.level = level;
+
+    stats.flag = NO_TEAM;
 
     for (int i = 0; i<3; i++) stats.points[i] = 0;
 
@@ -193,9 +184,19 @@ String Bird::getPassword() const {
     return String(pswdList[stats.level][stats.id]);
 }
 
-// Returns channel, deoending on ID and MAX_CHANNEL
+// Returns channel, depending on ID and MAX_CHANNEL
 int Bird::getChannel() const {
     return (stats.id % MAX_CHANNEL) + 1;
+}
+
+// Returns MAC Addrss, depending on ID and MAX_CHANNEL
+void Bird::getMacAddress(uint8_t* ptr) const {
+    ptr[0] = 0x18;                 // ESP
+    ptr[1] = 0xFE;                 // ESP
+    ptr[2] = 0x34;                 // ESP
+    ptr[3] = 0x00;                 // CHICKEN
+    ptr[4] = (uint8_t)stats.level; // LEVEL
+    ptr[5] = (uint8_t)stats.id;    // ID
 }
 
 // Returns number of connected clients
@@ -205,7 +206,7 @@ int Bird::getConnections() const {
 
 // Returns the number of points from a given team
 int Bird::getPoints(TEAM team) const {
-    return (team == NONE) ? 0 : stats.points[team];
+    return (team == NO_TEAM) ? 0 : stats.points[team];
 }
 
 // Returns string with the points of all teams i.e. "12,0,58"
@@ -272,7 +273,7 @@ bool Bird::resetGame(String password) {
 
         // Beginner level with no team holding it
         stats.level = EASY;
-        stats.flag  = NONE;
+        stats.flag  = NO_TEAM;
 
         // New ID with new SSID and password
         createID();

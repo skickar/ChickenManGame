@@ -26,24 +26,10 @@ extern const char* HARD_PSWD[];
 extern const int EEPROM_SIZE;
 extern const int EEPROM_STATS_ADDR;
 
-// ========== Game Stats ========== //
-
-// Used to verify memory of game_stats objects
-#define GAME_MAGIC_NUM 1234567890
-
-typedef struct game_stats {
-    unsigned int magic_num : 32; // Used to safely read and write to EEPROM
-
-    unsigned int id : 8;         // Random generated ID
-
-    LEVEL level;                 // 0: Easy, 1: Medium, 2: Hard, 3: Locked
-    TEAM  flag;                  // 0: Red, 1: Green, 3: Blue
-
-    unsigned int points[3];      // Red-Points, Green-Points, Blue-Points
-
-    char ssid[33];               // SSID of access point
-    char pswd[65];               // Password of access point
-} game_stats;
+// For wifi_set_macaddr()
+extern "C" {
+  #include "user_interface.h"
+}
 
 // ========== Bird Class ========== //
 
@@ -73,6 +59,7 @@ class Bird {
         String getSSID() const;
         String getPassword() const;
         int getChannel() const;
+        void getMacAddress(uint8_t* ptr) const;
 
         int getConnections() const;
 
