@@ -264,8 +264,6 @@ void Bird::setFlag(TEAM flag) {
 
 // Resets game stats
 bool Bird::resetGame(String password) {
-    Serial.print("Resetting Game...");
-
     // Check if the password is correct
     if (password == SUPER_SECRET) {
         // All points to 0
@@ -279,12 +277,10 @@ bool Bird::resetGame(String password) {
         createID();
         createAP();
 
-        Serial.println("Done");
+        saveStats();
 
         return true;
     }
-
-    Serial.println("Wrong Password");
 
     return false;
 }

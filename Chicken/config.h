@@ -20,7 +20,7 @@ const unsigned int POINTS_PER_SECOND[] = {
 const unsigned int POINT_INTERVAL = 1;
 
 // Hide SSID at level 2 (hard)
-const bool HIDDEN_SSID = false;
+const bool HIDDEN_SSID = true;
 
 // Max connections to access point at the same time
 const unsigned int MAX_CONNECTIONS = 5;

@@ -42,8 +42,9 @@ Command   cmdFlag;
 Command   cmdPoints;
 Command   cmdReset;
 
-int pointBlinkCounter = 0;
-GAME_TYPE type        = NO_TYPE;
+int pointBlinkCounter   = 0;
+GAME_TYPE type          = NO_TYPE;
+unsigned long sleepTime = 0;
 
 // ========== Global Functions ========== //
 
@@ -78,16 +79,31 @@ String handleCLI(String input) {
         }
 
         // Points
-        else if ((cmd == cmdPoints) && (type == CHICKEN)) {
-            pointBlinkCounter = 4;
-            return bird.getPointsString(true);
+        else if ((cmd == cmdPoints)) {
+            if (type == CHICKEN_MAN) {
+                return man.getPointsString();
+            } else {
+                pointBlinkCounter = 4;
+                return bird.getPointsString(true);
+            }
         }
 
         // Reset
-        else if ((cmd == cmdReset) && (type == CHICKEN)) {
-            if (bird.resetGame(cmd.getArgument("pswd").getValue())) {
-                return "Resetted game stats!";
-            };
+        else if ((cmd == cmdReset)) {
+            String res = "Resetting game...";
+
+            String password = cmd.getArgument("pswd").getValue();
+            bool   success;
+
+            if (type == CHICKEN_MAN) {
+                success = man.resetGame(password);
+            } else {
+                success = bird.resetGame(password);
+            }
+
+            res += success ? "Done" : "Wrong password";
+
+            return res;
         }
     }
 
@@ -131,6 +147,7 @@ void setup() {
     cmdReset = cli.addCommand("reset");
     cmdReset.addArgument("p/assword,pswd");
 
+    // ========== CHICKEN MAN ========== //
     if (digitalRead(SWITCH_PIN) == LOW) {
         Serial.println("Mode: Chicken Man");
 
@@ -141,7 +158,10 @@ void setup() {
         WiFi.disconnect();
 
         man.begin();
-    } else {
+    }
+
+    // ========== CHICKEN ========== //
+    else {
         Serial.println("Mode: Chicken");
 
         type = CHICKEN;
@@ -170,7 +190,41 @@ void setup() {
 
 // ========== Loop ========== //
 void loop() {
-    if (type == CHICKEN) {
+    // Serial CLI
+    if (Serial.available()) {
+        String input = Serial.readStringUntil(SERIAL_DELIMITER);
+
+        // Echo the input on the serial interface
+        Serial.print("# ");
+        Serial.println(input);
+
+        Serial.println(handleCLI(input));
+    }
+
+    // ========== CHICKEN MAN ========== //
+    if (type == CHICKEN_MAN) {
+        unsigned long difference = millis() - sleepTime;
+
+        if ((sleepTime == 0) || (difference >= 30000)) {
+            sleepTime = millis();
+
+            Serial.println();
+
+            man.update();
+            led.setColor(man.getFlag());
+
+            Serial.printf("Going to sleep for %lus...", 30 - ((millis() - sleepTime) / 1000));
+        } else if (difference % 2000 == 0) {
+            Serial.print("Z");
+        } else if (difference % 1000 == 0) {
+            Serial.print("z");
+        }
+
+        delay(1);
+    }
+
+    // ========== CHICKEN ========== //
+    else {
         // Update game (access point, server, ...)
         bird.update();
 
@@ -183,24 +237,7 @@ void loop() {
             led.setColor(bird.getFlag());
         }
 
-        // Serial CLI
-        if (Serial.available()) {
-            String input = Serial.readStringUntil(SERIAL_DELIMITER);
-
-            // Echo the input on the serial interface
-            Serial.print("# ");
-            Serial.println(input);
-
-            Serial.println(handleCLI(input));
-        }
-
         // Web server
         web.update();
-    } else {
-        man.update();
-        led.setColor(man.getFlag());
-
-        Serial.println("Going to sleep for 10s...zZzZ");
-        delay(10000);
     }
 }

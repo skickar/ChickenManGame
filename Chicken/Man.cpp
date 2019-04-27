@@ -23,10 +23,15 @@ bool Man::recoverStats() {
     return false;         // Failed
 }
 
-bool Man::isAChicken(String ssid, uint8_t* bssid) {
-    bool bssidValid = (bssid[0] == 0x18) && (bssid[1] == 0xFE) && (bssid[2] == 0x34) && (bssid[3] == 0x00);
+bool Man::isAChicken(uint8_t* bssid) const {
+    return (bssid[0] == 0x18) && (bssid[1] == 0xFE) &&
+           (bssid[2] == 0x34) && (bssid[3] == 0x00) &&
+           (bssid[4] <= (int)LEVEL::LOCKED) &&
+           (bssid[5] <= NUM_PASSWORDS);
+}
 
-    if (!bssidValid) return false;
+bool Man::isAChicken(String ssid, uint8_t* bssid) const {
+    if (!isAChicken(bssid)) return false;
 
     unsigned int level = bssid[4];
     unsigned int id    = bssid[5];
@@ -46,7 +51,7 @@ bool Man::isAChicken(String ssid, uint8_t* bssid) {
     return ssidValid;
 }
 
-String Man::getPassword(uint8_t* bssid) {
+String Man::getPassword(uint8_t* bssid) const {
     LEVEL level     = (LEVEL)bssid[4];
     unsigned int id = bssid[5];
 
@@ -66,6 +71,13 @@ String Man::getPassword(uint8_t* bssid) {
     return String();
 }
 
+String Man::getSSID(uint8_t* bssid) const {
+    LEVEL level     = (LEVEL)bssid[4];
+    unsigned int id = bssid[5];
+
+    return String(SSID_PREFIX) + String(DIFFICULTY[level]) + String(SSID_SUFFIX[id]);
+}
+
 void Man::addScore(String payload) {
     String rStr;
     String gStr;
@@ -73,7 +85,7 @@ void Man::addScore(String payload) {
 
     int comma = 0;
 
-    for (int i = 0; i<payload.length(); i++) {
+    for (unsigned int i = 0; i<payload.length(); i++) {
         char c = payload.charAt(i);
 
         if (c == ',') {
@@ -141,61 +153,81 @@ void Man::begin() {
 // Updates Chicken Man
 void Man::update() {
     Serial.println("Scanning for Networks");
-    // scan for networks
-    int n = WiFi.scanNetworks();
+
+    // scan for networks (async=false, show-hidden=true)
+    int n = WiFi.scanNetworks(false, true);
 
     // iterate through networks, connecting to chickens to get point data
     // this will also generate handshakes
     for (int i = 0; i < n; i++) {
-        String   ssid(WiFi.SSID(i));
-        uint8_t* bssid = WiFi.BSSID(i);
-
-        bool chick = isAChicken(ssid, bssid);
+        uint8_t* bssid    = WiFi.BSSID(i);
+        String   ssid     = WiFi.isHidden(i) ? getSSID(bssid) : WiFi.SSID(i);
+        String   password = getPassword(bssid);
+        bool     chick    = isAChicken(ssid, bssid);
 
         Serial.printf("%-32s - %s\n", ssid.c_str(), chick ? "Chicken" : "WORTHLESS!");
 
-        if (chick) {
-            String password(getPassword(bssid));
+        if (!chick) continue;  // Next network
 
-            Serial.printf("Connecting to '%s' with password '%s'\n", ssid.c_str(), password.c_str());
+        Serial.printf("Connecting to '%s' with password '%s'\n", ssid.c_str(), password.c_str());
 
-            WiFi.begin(ssid.c_str(), password.c_str());
-            WiFiClient client;
+        WiFi.begin(ssid.c_str(), password.c_str());
+        WiFiClient client;
 
-            unsigned long startTime = millis();
+        unsigned long startTime = millis();
 
-            // Try to connect for 5s
-            while (WiFi.status() != WL_CONNECTED) {
-                if (millis() - startTime > 5000) {
-                    Serial.println("Couldn't connect :(");
-                    return;
-                }
-                else delay(100);
+        // Try to connect for 5s
+        while (WiFi.status() != WL_CONNECTED) {
+            if (millis() - startTime > 5000) {
+                Serial.println("Couldn't connect :(");
+                return;
             }
+        }
 
-            Serial.print("Getting score...");
+        Serial.print("Getting score...");
 
-            // Open URL to get points
-            http.begin(client, "http://192.168.4.1/points.html");
+        // Open URL to get points
+        http.begin(client, "http://192.168.4.1/points.html");
 
-            int httpCode   = http.GET();
-            String payload = http.getString();
+        int httpCode   = http.GET();
+        String payload = http.getString();
 
-            if (httpCode > 0) {
-                Serial.printf("(%s)\n", payload.c_str());
-                addScore(payload);
-            } else {
-                Serial.printf("ERROR %d\n", httpCode);
-            }
+        if (httpCode > 0) {
+            Serial.printf("(%s)\n", payload.c_str());
+            addScore(payload);
+        } else {
+            Serial.printf("ERROR %d\n", httpCode);
         }
     }
 }
 
-int Man::getScore(TEAM team) {
+int Man::getPoints(TEAM team) const {
     if (team == NO_TEAM) return 0;
     return stats.points[(int)team];
 }
 
-TEAM Man::getFlag() {
+String Man::getPointsString() const {
+    return String(stats.points[0]) + ',' + String(stats.points[1]) + ',' + String(stats.points[2]);
+}
+
+TEAM Man::getFlag() const {
     return stats.flag;
+}
+
+// Resets game stats
+bool Man::resetGame(String password) {
+    // Check if the password is correct
+    if (password == SUPER_SECRET) {
+        // All points to 0
+        for (int i = 0; i < 3; i++) stats.points[i] = 0;
+
+        // No team holding the flag
+        stats.flag = NO_TEAM;
+
+        saveStats();
+
+        return true;
+    }
+
+    return false;
 }

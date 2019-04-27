@@ -35,8 +35,11 @@ class Man {
         void saveStats();
         bool recoverStats();
 
-        bool isAChicken(String ssid, uint8_t* bssid);
-        String getPassword(uint8_t* bssid);
+        bool isAChicken(uint8_t* bssid) const;
+        bool isAChicken(String ssid, uint8_t* bssid) const;
+        String getSSID(uint8_t* bssid) const;
+        String getPassword(uint8_t* bssid) const;
+
         void addScore(String payload);
 
     public:
@@ -45,8 +48,12 @@ class Man {
         void begin();
         void update();
 
-        int getScore(TEAM team);
-        TEAM getFlag();
+        int getPoints(TEAM team) const;
+        String getPointsString() const;
+
+        TEAM getFlag() const;
+
+        bool resetGame(String password);
 };
 
 
