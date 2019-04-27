@@ -45,10 +45,6 @@ void Bird::createAP() {
     // Disconnect clients
     WiFi.softAPdisconnect();
 
-    // Go into station mode
-    WiFi.mode(WIFI_STA);
-    WiFi.disconnect();
-
     // Create SSID and password
     String ssid     = getSSID();
     String password = getPassword();
@@ -60,9 +56,6 @@ void Bird::createAP() {
     // Go into AP mode
     WiFi.mode(WIFI_AP);
 
-    // Set IP Adress, Gateway and Subnetmask
-    WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
-
     // Generate and set MAC address (BSSID) of access point
     uint8_t mac[6];
     getMacAddress(mac);
@@ -70,6 +63,11 @@ void Bird::createAP() {
 
     // Start access point
     WiFi.softAP(stats.ssid, stats.pswd, getChannel(), HIDDEN_SSID && stats.level == 2, MAX_CONNECTIONS);
+
+    delay(100);
+
+    // Set IP Adress, Gateway and Subnetmask
+    WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
 
     // Print infos
     Serial.println("--------------------------------------------");
@@ -187,6 +185,11 @@ void Bird::begin() {
 // Updates game piece
 void Bird::update() {
     updatePoints();
+
+    if ((flagTime > 0) && (millis() - flagTime >= 2000)) {
+        createAP();
+        flagTime = 0;
+    }
 }
 
 // Builds SSID (i.e. "Chicken_" + "easy" + "_01"), depending on level and ID
@@ -277,7 +280,9 @@ void Bird::setFlag(TEAM flag) {
             break;
     }
 
-    createAP();
+    saveStats();
+
+    flagTime = millis();
 }
 
 // Resets game stats

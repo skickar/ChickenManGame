@@ -16,13 +16,12 @@ void LED::setColor(int r, int g, int b) {
     digitalWrite(LED_PIN_R, ledR);
     digitalWrite(LED_PIN_G, ledG);
     digitalWrite(LED_PIN_B, ledB);
+
+    // Serial.printf("color(%d,%d,%d)\n", ledR, ledG, ledB);
 }
 
 void LED::setColor(TEAM flag) {
-    if (millis() - lastBlink >= 1000) {
-        lastBlink = millis();
-        setColor(flag == RED, flag == GREEN, flag == BLUE);
-    }
+    setColor(flag == RED, flag == GREEN, flag == BLUE);
 }
 
 unsigned int LED::blink(unsigned long interval, TEAM flag, unsigned int times) {
@@ -31,7 +30,7 @@ unsigned int LED::blink(unsigned long interval, TEAM flag, unsigned int times) {
             setColor(0, 0, 0);
         }  else {
             if (flag == NO_TEAM) setColor(1, 1, 1);
-            setColor(flag);
+            else setColor(flag);
         }
 
         lastBlink = millis();

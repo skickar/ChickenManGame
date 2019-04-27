@@ -41,6 +41,8 @@ class Bird {
 
         bool error = false;
 
+        unsigned long flagTime = 0;
+
         void updatePoints();
 
         void saveStats();

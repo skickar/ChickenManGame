@@ -11,7 +11,9 @@ void handleRoot() {
     // When a command argument was attached, run it through the CLI
     if (webServer.hasArg("cmd")) {
         String input = webServer.arg("cmd");
+        Serial.printf("[Web]# %s\n", input.c_str());
         answer = handleCLI(input);
+        Serial.println(answer);
     }
 
     // Build HTML string
@@ -25,7 +27,10 @@ void handleRoot() {
 
 // points.html
 void handlePoints() {
-    webServer.send(200, "text/html", handleCLI("points"));
+    Serial.println("[Web]# points");
+    String answer = handleCLI("points");
+    webServer.send(200, "text/html", answer);
+    Serial.println(answer);
 }
 
 // 404 Site Not Found

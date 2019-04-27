@@ -225,19 +225,19 @@ void loop() {
 
     // ========== CHICKEN ========== //
     else {
+        // Web server
+        web.update();
+
         // Update game (access point, server, ...)
         bird.update();
 
         // Blink LED(s) when eggs are gathered
         if (pointBlinkCounter) {
-            pointBlinkCounter = led.blink(8, bird.getFlag(), pointBlinkCounter);
+            pointBlinkCounter = led.blink(4, bird.getFlag(), pointBlinkCounter);
         }
         // Otherwise set the current flag color
         else {
             led.setColor(bird.getFlag());
         }
-
-        // Web server
-        web.update();
     }
 }
