@@ -242,6 +242,7 @@ String Bird::getPointsString(bool reset) {
         stats.points[0] = 0;
         stats.points[1] = 0;
         stats.points[2] = 0;
+        saveStats();
     }
 
     return pointsStr;
