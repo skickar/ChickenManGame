@@ -47,6 +47,7 @@ class Bird {
         bool recoverStats();
 
         void createID();
+        void setID(unsigned int id);
         void createAP();
 
     public:

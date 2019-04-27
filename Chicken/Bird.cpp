@@ -84,48 +84,65 @@ void Bird::createAP() {
     Serial.println("---------------------------------------------");
 }
 
-// Generates a random ID and checks that it's not already in use
+// Pick a random ID
 void Bird::createID() {
-    stats.id = random(0, NUM_PASSWORDS); // Pick a random ID to start with
+    setID(random(0, NUM_PASSWORDS));
+}
+
+// Set ID and make sure it's not already in use
+void Bird::setID(unsigned int id) {
+    stats.id = id;
 
     // Go into station mode
     WiFi.mode(WIFI_STA);
     WiFi.disconnect();
-
-    // Scan for networks
     Serial.println("Scanning for networks");
 
-    int networks       = WiFi.scanNetworks();
-    unsigned int tries = 0;
+    // Scan for networks (async=false, show-hidden=true)
+    int n = WiFi.scanNetworks(false, true);
+
+    // Array of available IDs
+    bool availableIDs[NUM_PASSWORDS];
+
+    // Set all IDs to available by default
+    for (unsigned int i = 0; i<NUM_PASSWORDS; i++) availableIDs[i] = true;
 
     // Check all networks
-    for (int i = 0; i < networks && tries < NUM_PASSWORDS; i++) {
+    for (int i = 0; i<n; i++) {
         // Find a network that's part of the game
-        String ssid = WiFi.SSID(i);
+        uint8_t* bssid = WiFi.BSSID(i);
+        bool     chick = (bssid[0] == 0x18) && (bssid[1] == 0xFE) &&
+                         (bssid[2] == 0x34) && (bssid[3] == 0x00) &&
+                         (bssid[4] <= (int)LEVEL::LOCKED) &&
+                         (bssid[5] <= NUM_PASSWORDS);
 
-        if (ssid.startsWith(SSID_PREFIX)) {
-            // If network has the same ID, take next one
-            if (ssid.endsWith(SSID_SUFFIX[stats.id])) {
-                stats.id = (stats.id+1) % NUM_PASSWORDS;
-                ++tries;
-            }
+        // Make used ID unavailble
+        if (chick) {
+            int chickenID = bssid[5];
+            availableIDs[chickenID] = false;
         }
 
         // Print network
-        Serial.printf("%d: '%s' (%d) %s\n", i, WiFi.SSID(i).c_str(), WiFi.RSSI(i), (WiFi.encryptionType(i) == ENC_TYPE_NONE) ? " " : "*");
+        Serial.printf("%-32s - %s\n", WiFi.SSID(i).c_str(), chick ? "Chicken" : "WORTHLESS!");
     }
 
-    // No ID found that isn't already in use
-    if (tries >= NUM_PASSWORDS) {
+    // If chosen ID is not available, take next best one that is available
+    if (!availableIDs[stats.id]) {
+        for (unsigned int i = 0; i<NUM_PASSWORDS; i++) {
+            if (availableIDs[i]) {
+                stats.id = i;
+                Serial.printf("ID set to %d\n", stats.id);
+                return;
+            }
+        }
+
+        // No ID found that isn't already in use
         stats.id = 0;
         error    = true;
         Serial.println("ERROR: All IDs already in use");
     }
 
-    // Everything is fine :D
-    else {
-        Serial.printf("ID set to %d\n", stats.id);
-    }
+    Serial.printf("ID set to %d\n", stats.id);
 }
 
 // ========= Public ========= //
@@ -155,6 +172,7 @@ void Bird::begin() {
     // Try to recover previous game stats
     if (recoverStats()) {
         Serial.println("Revived bird");
+        setID(stats.id);
     }
     // Otherwise generate new random ID (= new SSID and password too)
     else {
