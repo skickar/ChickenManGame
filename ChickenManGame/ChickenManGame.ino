@@ -66,12 +66,15 @@ String handleCLI(String input) {
             // Set flags and return a reply string
             if (team.equalsIgnoreCase("blue")) {
                 bird.setFlag(BLUE);
+                led.setColor(BLUE);
                 return "Why so blue?";
             } else if (team.equalsIgnoreCase("red")) {
                 bird.setFlag(RED);
+                led.setColor(RED);
                 return "Seeing red?";
             } else if (team.equalsIgnoreCase("green")) {
                 bird.setFlag(GREEN);
+                led.setColor(GREEN);
                 return "The others must be green with envy!";
             } else {
                 return "Wrong team, mate!";
