@@ -72,10 +72,13 @@ String Man::getPassword(uint8_t* bssid) const {
 }
 
 String Man::getSSID(uint8_t* bssid) const {
-    LEVEL level     = (LEVEL)bssid[4];
-    unsigned int id = bssid[5];
-
-    return String(SSID_PREFIX) + String(DIFFICULTY[level]) + String(SSID_SUFFIX[id]);
+    if(bssid[4] < (int)LEVEL::LOCKED && bssid[5] < NUM_PASSWORDS) {
+      LEVEL level     = (LEVEL)bssid[4];
+      unsigned int id = bssid[5];
+  
+      return String(SSID_PREFIX) + String(DIFFICULTY[level]) + String(SSID_SUFFIX[id]);
+    }
+    return String();
 }
 
 void Man::addScore(String payload) {
@@ -172,7 +175,9 @@ void Man::update() {
         Serial.printf("Connecting to '%s' with password '%s'\n", ssid.c_str(), password.c_str());
 
         WiFi.begin(ssid.c_str(), password.c_str());
+        delay(100);
         WiFiClient client;
+        delay(100);
 
         unsigned long startTime = millis();
 
@@ -182,12 +187,13 @@ void Man::update() {
                 Serial.println("Couldn't connect :(");
                 return;
             }
+            delay(50);
         }
 
         Serial.print("Getting score...");
 
         // Open URL to get points
-        http.begin(client, "http://192.168.4.1/points.html");
+        http.begin(/*client, */"http://192.168.4.1/points.html");
 
         int httpCode   = http.GET();
         String payload = http.getString();
