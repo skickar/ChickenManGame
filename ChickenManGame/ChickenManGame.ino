@@ -125,11 +125,14 @@ void setup() {
     // Random seed
     randomSeed(os_random());
 
+    // Start EEPROM
+    EEPROMHelper::begin(EEPROM_SIZE);
+
     // If resetted 3 times in a row
-    if (!EEPROMHelper::checkBootNum(EEPROM_SIZE, EEPROM_BOOT_ADDR)) {
+    if (!EEPROMHelper::checkBootNum(EEPROM_BOOT_ADDR)) {
         // Erase (overwrite) old stats
         game_stats emptyStats;
-        EEPROMHelper::saveObject(EEPROM_SIZE, EEPROM_STATS_ADDR, emptyStats);
+        EEPROMHelper::saveObject(EEPROM_STATS_ADDR, emptyStats);
     }
 
     // Setup LED(s)
@@ -157,7 +160,11 @@ void setup() {
         WiFi.mode(WIFI_STA);
         WiFi.disconnect();
 
+        // Start the chicken man
         man.begin();
+
+        // Set flag color
+        led.setColor(man.getFlag());
     }
 
     // ========== CHICKEN ========== //
@@ -182,10 +189,13 @@ void setup() {
 
         // Start web interface
         web.begin();
+
+        // Set flag color
+        led.setColor(bird.getFlag());
     }
 
     // Set boot counter back to 1
-    EEPROMHelper::resetBootNum(EEPROM_SIZE, EEPROM_BOOT_ADDR);
+    EEPROMHelper::resetBootNum(EEPROM_BOOT_ADDR);
 }
 
 // ========== Loop ========== //
@@ -211,7 +221,7 @@ void loop() {
             Serial.println();
 
             man.update();
-            
+
             pointBlinkCounter = 4;
 
             Serial.printf("Going to sleep for %lus...", 30 - ((millis() - sleepTime) / 1000));
@@ -224,7 +234,7 @@ void loop() {
         // Blink LED(s) when eggs are gathered
         if (pointBlinkCounter) {
             pointBlinkCounter = led.blink(4, man.getFlag(), pointBlinkCounter);
-            if(pointBlinkCounter == 0) led.setColor(man.getFlag());
+            if (pointBlinkCounter == 0) led.setColor(man.getFlag());
         }
 
         delay(1);
@@ -241,7 +251,7 @@ void loop() {
         // Blink LED(s) when eggs are gathered
         if (pointBlinkCounter) {
             pointBlinkCounter = led.blink(4, bird.getFlag(), pointBlinkCounter);
-            if(pointBlinkCounter == 0) led.setColor(bird.getFlag());
+            if (pointBlinkCounter == 0) led.setColor(bird.getFlag());
         }
     }
 }

@@ -22,14 +22,14 @@ void Bird::updatePoints() {
 
 // Save game stats in EEPROM
 void Bird::saveStats() {
-    EEPROMHelper::saveObject(EEPROM_SIZE, EEPROM_STATS_ADDR, stats);
+    EEPROMHelper::saveObject(EEPROM_STATS_ADDR, stats);
 }
 
 // Recover game stats from EEPROM
 bool Bird::recoverStats() {
     game_stats tmpStats;
 
-    EEPROMHelper::getObject(EEPROM_SIZE, EEPROM_STATS_ADDR, tmpStats);
+    EEPROMHelper::getObject(EEPROM_STATS_ADDR, tmpStats);
 
     // Check if memory valid
     if ((tmpStats.magic_num == GAME_MAGIC_NUM) && (tmpStats.mode == CHICKEN)) {
@@ -46,7 +46,7 @@ void Bird::createAP() {
     saveStats();
 
     delay(100);
-  
+
     // Disconnect clients
     WiFi.softAPdisconnect();
 
@@ -79,7 +79,7 @@ void Bird::createAP() {
     WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
 
     delay(100);
-    
+
     // Print infos
     Serial.println("--------------------------------------------");
     Serial.printf("Flag:          %d\n", getFlag());

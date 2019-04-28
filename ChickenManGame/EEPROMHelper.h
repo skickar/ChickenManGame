@@ -19,47 +19,41 @@ typedef struct boot {
 // ========== EEPROM Helper Class ========== //
 class EEPROMHelper {
     public:
-        template<typename T>
-        static void saveObject(const int eepromSize, const int address, const T& t) {
+        static void begin(const int eepromSize) {
             EEPROM.begin(eepromSize);
+        }
 
+        static void end() {
+            EEPROM.end();
+        }
+
+        template<typename T>
+        static void saveObject(const int address, const T& t) {
             EEPROM.put(address, t);
 
             EEPROM.commit();
-            EEPROM.end();
         }
 
         template<typename T>
-        static void getObject(const int eepromSize, const int address, const T& t) {
-            EEPROM.begin(eepromSize);
-
+        static void getObject(const int address, const T& t) {
             EEPROM.get(address, t);
-
-            EEPROM.end();
         }
 
-        static bool checkBootNum(const int eepromSize, const int address) {
-            EEPROM.begin(eepromSize);
-
+        static bool checkBootNum(const int address) {
             boot b;
+
             EEPROM.get(address, b);
 
-            EEPROM.end();
-
             if ((b.magic_num == BOOT_MAGIC_NUM) && (b.boot_num < 3)) {
-                saveObject(eepromSize, address, boot{ BOOT_MAGIC_NUM, ++b.boot_num });
+                saveObject(address, boot{ BOOT_MAGIC_NUM, ++b.boot_num });
                 return true;
             }
 
             return false;
         }
 
-        static void resetBootNum(const int eepromSize, const int address) {
-            EEPROM.begin(eepromSize);
-
-            saveObject(eepromSize, address, boot{ BOOT_MAGIC_NUM, 1 });
-
-            EEPROM.end();
+        static void resetBootNum(const int address) {
+            saveObject(address, boot{ BOOT_MAGIC_NUM, 1 });
         }
 };
 

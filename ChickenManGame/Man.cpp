@@ -5,14 +5,14 @@
 
 // Save game stats in EEPROM
 void Man::saveStats() {
-    EEPROMHelper::saveObject(EEPROM_SIZE, EEPROM_STATS_ADDR, stats);
+    EEPROMHelper::saveObject(EEPROM_STATS_ADDR, stats);
 }
 
 // Recover game stats from EEPROM
 bool Man::recoverStats() {
     game_stats tmpStats;
 
-    EEPROMHelper::getObject(EEPROM_SIZE, EEPROM_STATS_ADDR, tmpStats);
+    EEPROMHelper::getObject(EEPROM_STATS_ADDR, tmpStats);
 
     // Check if memory valid
     if ((tmpStats.magic_num == GAME_MAGIC_NUM) && (tmpStats.mode == CHICKEN_MAN)) {
@@ -72,11 +72,11 @@ String Man::getPassword(uint8_t* bssid) const {
 }
 
 String Man::getSSID(uint8_t* bssid) const {
-    if(bssid[4] < (int)LEVEL::LOCKED && bssid[5] < NUM_PASSWORDS) {
-      LEVEL level     = (LEVEL)bssid[4];
-      unsigned int id = bssid[5];
-  
-      return String(SSID_PREFIX) + String(DIFFICULTY[level]) + String(SSID_SUFFIX[id]);
+    if ((bssid[4] < (int)LEVEL::LOCKED) && (bssid[5] < NUM_PASSWORDS)) {
+        LEVEL level     = (LEVEL)bssid[4];
+        unsigned int id = bssid[5];
+
+        return String(SSID_PREFIX) + String(DIFFICULTY[level]) + String(SSID_SUFFIX[id]);
     }
     return String();
 }
@@ -193,7 +193,7 @@ void Man::update() {
         Serial.print("Getting score...");
 
         // Open URL to get points
-        http.begin(/*client, */"http://192.168.4.1/points.html");
+        http.begin(/*client, */ "http://192.168.4.1/points.html");
 
         int httpCode   = http.GET();
         String payload = http.getString();
