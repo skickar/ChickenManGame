@@ -72,13 +72,13 @@ String Man::getPassword(uint8_t* bssid) const {
 }
 
 String Man::getSSID(uint8_t* bssid) const {
-    if ((bssid[4] < (int)LEVEL::LOCKED) && (bssid[5] < NUM_PASSWORDS)) {
+    if ((bssid[4] <= (int)LEVEL::LOCKED) && (bssid[5] < NUM_PASSWORDS)) {
         LEVEL level     = (LEVEL)bssid[4];
         unsigned int id = bssid[5];
 
         return String(SSID_PREFIX) + String(DIFFICULTY[level]) + String(SSID_SUFFIX[id]);
     }
-    return String();
+    return String("*Hidden Network*");
 }
 
 void Man::addScore(String payload) {

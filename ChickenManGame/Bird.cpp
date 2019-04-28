@@ -133,8 +133,10 @@ void Bird::setID(unsigned int id) {
             availableIDs[chickenID] = false;
         }
 
+        String ssid = WiFi.hidden(i) ? "*Hidden*" : WiFi.SSID(i);
+
         // Print network
-        Serial.printf("%-32s - %s\n", WiFi.SSID(i).c_str(), chick ? "Chicken" : "WORTHLESS!");
+        Serial.printf("%-32s - %s\n", ssid.c_str(), chick ? "Chicken" : "WORTHLESS!");
     }
 
     // If chosen ID is not available, take next best one that is available
