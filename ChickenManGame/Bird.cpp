@@ -42,8 +42,15 @@ bool Bird::recoverStats() {
 
 // Creates a new access point based on ID and level
 void Bird::createAP() {
+    // Save game stats, in case something goes wrong
+    saveStats();
+
+    delay(100);
+  
     // Disconnect clients
     WiFi.softAPdisconnect();
+
+    delay(100);
 
     // Create SSID and password
     String ssid     = getSSID();
@@ -55,6 +62,8 @@ void Bird::createAP() {
 
     // Go into AP mode
     WiFi.mode(WIFI_AP);
+
+    delay(100);
 
     // Generate and set MAC address (BSSID) of access point
     uint8_t mac[6];
@@ -69,6 +78,8 @@ void Bird::createAP() {
     // Set IP Adress, Gateway and Subnetmask
     WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1), IPAddress(255, 255, 255, 0));
 
+    delay(100);
+    
     // Print infos
     Serial.println("--------------------------------------------");
     Serial.printf("Flag:          %d\n", getFlag());
@@ -80,6 +91,8 @@ void Bird::createAP() {
     Serial.printf("SSID:          %s\n", stats.ssid);
     Serial.printf("Password:      %s\n", stats.pswd);
     Serial.println("---------------------------------------------");
+
+    delay(100);
 }
 
 // Pick a random ID
