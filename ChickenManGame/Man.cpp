@@ -151,6 +151,9 @@ void Man::begin() {
     } else {
         Serial.println("Created new Chicken Man");
     }
+
+    // Delay to give the user a chance to hit reset
+    delay(2000);
 }
 
 // Updates Chicken Man
