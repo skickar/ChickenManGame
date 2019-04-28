@@ -211,13 +211,20 @@ void loop() {
             Serial.println();
 
             man.update();
-            led.setColor(man.getFlag());
+            
+            pointBlinkCounter = 4;
 
             Serial.printf("Going to sleep for %lus...", 30 - ((millis() - sleepTime) / 1000));
         } else if (difference % 2000 == 0) {
             Serial.print("Z");
         } else if (difference % 1000 == 0) {
             Serial.print("z");
+        }
+
+        // Blink LED(s) when eggs are gathered
+        if (pointBlinkCounter) {
+            pointBlinkCounter = led.blink(4, man.getFlag(), pointBlinkCounter);
+            if(pointBlinkCounter == 0) led.setColor(man.getFlag());
         }
 
         delay(1);
@@ -234,10 +241,7 @@ void loop() {
         // Blink LED(s) when eggs are gathered
         if (pointBlinkCounter) {
             pointBlinkCounter = led.blink(4, bird.getFlag(), pointBlinkCounter);
-        }
-        // Otherwise set the current flag color
-        else {
-            led.setColor(bird.getFlag());
+            if(pointBlinkCounter == 0) led.setColor(bird.getFlag());
         }
     }
 }
