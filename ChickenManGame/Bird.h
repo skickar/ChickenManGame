@@ -49,7 +49,7 @@ class Bird {
 
         void createID();
         void setID(unsigned int id);
-        void createAP(bool firstStart = false);
+        void createAP();
 
     public:
         Bird(int id = 0, LEVEL level = EASY);
