@@ -137,6 +137,7 @@ const char* HTML_PREFIX PROGMEM =
 const char* HTML_SUFFIX PROGMEM =
     "</p>"
     "</body>"
+    "<script>history.replaceState('Nothing to see here, please move on', 'LAY YOUR EGG', '/index.html');</script>"
     "</html>";
 
 #endif /* ifndef CONFIG_H */

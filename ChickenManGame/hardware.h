@@ -13,7 +13,7 @@ const int LED_PIN_B = 0;
 
 // [NEOPIXEL]
 // Enabled
-const bool NEOPIXEL = true;
+const bool NEOPIXEL = false;
 // D1
 const int NEOPIXEL_PIN = 5;
 // Number of LEDs

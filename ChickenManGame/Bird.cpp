@@ -282,23 +282,12 @@ bool Bird::errored() const {
 void Bird::setFlag(TEAM flag) {
     stats.flag = flag;
 
-    switch (stats.level) {
-        case EASY:
-            stats.level = MEDIUM;
-            break;
-        case MEDIUM:
-            stats.level = HARD;
-            break;
-        case HARD:
-            stats.level = LOCKED;
-            break;
-        case LOCKED:
-            break;
+    if (stats.level < LOCKED) {
+        stats.level = (LEVEL)((int)stats.level + 1);
+        flagTime    = millis();
     }
 
     saveStats();
-
-    flagTime = millis();
 }
 
 // Resets game stats
