@@ -17,7 +17,7 @@ const unsigned int POINTS_PER_SECOND[] = {
     0, // Points-Per-Second on Easy (Level 0) - no team by default
     1, // Points-Per-Second on Medium (Level 1)
     2, // Points-Per-Second on Hard (Level 2)
-    3  // Points-Per-Second on Cooked (Level 3)
+    4  // Points-Per-Second on Cooked (Level 3)
 };
 
 // How often to increment team points in seconds
