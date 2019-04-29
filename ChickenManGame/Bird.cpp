@@ -41,16 +41,27 @@ bool Bird::recoverStats() {
 }
 
 // Creates a new access point based on ID and level
-void Bird::createAP() {
+void Bird::createAP(bool firstStart) {
     // Save game stats, in case something goes wrong
     saveStats();
 
     delay(100);
 
-    // Disconnect clients
-    WiFi.softAPdisconnect();
+    // Try 5 times to close AP and disconnect all clients
+    if (!firstStart) {
+        bool success = false;
 
-    delay(100);
+        for (int i = 0; i<5 && !success; i++) {
+            success = WiFi.softAPdisconnect(true);
+            Serial.printf("Closing existing access point (%d)...%s\n", i, success ? "OK" : "ERROR");
+            delay(100);
+        }
+
+        if (!success) {
+            error = true;
+            return;
+        }
+    }
 
     // Create SSID and password
     String ssid     = getSSID();
@@ -194,7 +205,7 @@ void Bird::begin() {
     }
 
     // Create access point
-    createAP();
+    createAP(true);
 }
 
 // Updates game piece

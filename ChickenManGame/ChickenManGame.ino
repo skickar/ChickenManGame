@@ -179,17 +179,6 @@ void setup() {
         // Setup Game Access Point
         bird.begin();
 
-        // If something went wrong, blink like crazy for 5s and then restart
-        if (bird.errored()) {
-            unsigned long startTime = millis();
-
-            while (millis() - startTime >= 5000) {
-                led.blink(10, NO_TEAM);
-            }
-
-            ESP.restart();
-        }
-
         // Start web interface
         web.begin();
 
@@ -245,6 +234,17 @@ void loop() {
 
     // ========== CHICKEN ========== //
     else {
+        // If something went wrong, blink like crazy for 5s and then restart
+        if (bird.errored()) {
+            unsigned long startTime = millis();
+
+            while (millis() - startTime >= 5000) {
+                led.blink(10, NO_TEAM);
+            }
+
+            ESP.restart();
+        }
+
         // Web server
         web.update();
 
