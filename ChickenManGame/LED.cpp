@@ -1,21 +1,44 @@
 #include "LED.h"
 
+LED::~LED() {
+    if (pixels) delete pixels;
+}
+
 void LED::begin() {
-    pinMode(LED_PIN_R, OUTPUT);
-    pinMode(LED_PIN_G, OUTPUT);
-    pinMode(LED_PIN_B, OUTPUT);
+    if (NEOPIXEL) {
+        pixels = new Adafruit_NeoPixel(NEOPIXEL_NUM, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+        pixels->setBrightness(NEOPIXEL_BRIGHTNESS);
+        pixels->begin();
+    } else {
+        pinMode(LED_PIN_R, OUTPUT);
+        pinMode(LED_PIN_G, OUTPUT);
+        pinMode(LED_PIN_B, OUTPUT);
+    }
 
     setColor(1, 1, 1);
 }
 
 void LED::setColor(int r, int g, int b) {
-    ledR = r ? 1 : 0;
-    ledG = g ? 1 : 0;
-    ledB = b ? 1 : 0;
+    if (NEOPIXEL) {
+        ledR = r ? 255 : 0;
+        ledG = g ? 255 : 0;
+        ledB = b ? 255 : 0;
 
-    digitalWrite(LED_PIN_R, ledR);
-    digitalWrite(LED_PIN_G, ledG);
-    digitalWrite(LED_PIN_B, ledB);
+        if (pixels) {
+            for (int i = 0; i<NEOPIXEL_NUM; i++) {
+                pixels->setPixelColor(i, ledR, ledG, ledB);
+            }
+            pixels->show();
+        }
+    } else {
+        ledR = r ? 1 : 0;
+        ledG = g ? 1 : 0;
+        ledB = b ? 1 : 0;
+
+        digitalWrite(LED_PIN_R, ledR);
+        digitalWrite(LED_PIN_G, ledG);
+        digitalWrite(LED_PIN_B, ledB);
+    }
 
     // Serial.printf("color(%d,%d,%d)\n", ledR, ledG, ledB);
 }

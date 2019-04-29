@@ -11,6 +11,16 @@ const int LED_PIN_G = 4;
 // D3
 const int LED_PIN_B = 0;
 
+// [NEOPIXEL]
+// Enabled
+const bool NEOPIXEL = true;
+// D1
+const int NEOPIXEL_PIN = 5;
+// Number of LEDs
+const int NEOPIXEL_NUM = 1;
+// Brightness ( 0 - 255 )
+const int NEOPIXEL_BRIGHTNESS = 90;
+
 // [Switch]
 // D7
 const int SWITCH_PIN = 13;

@@ -2,8 +2,6 @@
 #define EEPROMHELPER_H
 
 // ========== Includes ========== //
-
-// [Libraries]
 #include <EEPROM.h>
 
 // ========== Boot Counter Structure ========== //
