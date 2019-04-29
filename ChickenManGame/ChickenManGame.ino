@@ -218,7 +218,7 @@ void loop() {
     if (type == CHICKEN_MAN) {
         unsigned long difference = millis() - sleepTime;
 
-        if ((sleepTime == 0) || (difference >= 30000)) {
+        if ((sleepTime == 0) || (difference >= CHICKEN_MAN_INTERVAL * 1000)) {
             sleepTime = millis();
 
             Serial.println();

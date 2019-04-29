@@ -9,6 +9,9 @@ const unsigned int NUM_PASSWORDS = 15;
 // To unlock locked birds
 const char* SUPER_SECRET PROGMEM = "edfd8e8160383696120dfb444a8b43f1";
 
+// Interval for chicken man in which it connects to the chickens to generate handshakes
+const unsigned long CHICKEN_MAN_INTERVAL = 30; // in seconds
+
 // Points
 const unsigned int POINTS_PER_SECOND[] = {
     1, // Points-Per-Second on Easy (Level 0)
