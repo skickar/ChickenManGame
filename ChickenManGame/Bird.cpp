@@ -10,11 +10,7 @@ void Bird::updatePoints() {
         lastPointUpdate = millis(); // Update time variable
 
         // Add configured amount of points
-        if (stats.level < LOCKED) {
-            stats.points[stats.flag] += POINTS_PER_SECOND[stats.level];
-        } else {
-            stats.points[stats.flag] += POINTS_PER_SECOND[HARD];
-        }
+        stats.points[stats.flag] += POINTS_PER_SECOND[stats.level];
 
         saveStats();
     }

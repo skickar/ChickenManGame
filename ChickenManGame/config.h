@@ -14,9 +14,10 @@ const unsigned long CHICKEN_MAN_INTERVAL = 30; // in seconds
 
 // Points
 const unsigned int POINTS_PER_SECOND[] = {
-    1, // Points-Per-Second on Easy (Level 0)
-    2, // Points-Per-Second on Medium (Level 1)
-    5  // Points-Per-Second on Hard (Level 2)
+    0, // Points-Per-Second on Easy (Level 0) - no team by default
+    1, // Points-Per-Second on Medium (Level 1)
+    2, // Points-Per-Second on Hard (Level 2)
+    3  // Points-Per-Second on Cooked (Level 3)
 };
 
 // How often to increment team points in seconds
