@@ -197,8 +197,10 @@ void Bird::update() {
 
     // Restart with new flag set
     if ((flagTime > 0) && (millis() - flagTime >= 2000)) {
-        saveStats();
-        ESP.restart();
+        //saveStats();
+        //ESP.restart();
+        flagTime = 0;
+        createAP();
     }
 }
 
