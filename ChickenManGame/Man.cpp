@@ -117,8 +117,6 @@ void Man::addScore(String payload) {
     else if (stats.points[2] > stats.points[(int)getFlag()]) stats.flag = BLUE;
 
     saveStats();
-
-    Serial.printf("Score = (%d,%d,%d)\n", stats.points[0], stats.points[1], stats.points[2]);
 }
 
 // ========= Public ========= //
@@ -158,11 +156,14 @@ void Man::begin() {
 
 // Updates Chicken Man
 void Man::update() {
-    Serial.println("Scanning for Networks...");
     Serial.println("---------------------------------------------------------------");
+    Serial.println("Scanning for Networks...");
     
     // scan for networks (async=false, show-hidden=true)
     int n = WiFi.scanNetworks(false, true);
+
+    Serial.println(n);
+    Serial.println("---------------------------------------------------------------");
 
     // iterate through networks, connecting to chickens to get point data
     // this will also generate handshakes
@@ -176,7 +177,7 @@ void Man::update() {
 
         if (!chick) continue;  // Next network
 
-        Serial.printf("Connecting to '%s' with password '%s'\n", ssid.c_str(), password.c_str());
+        Serial.printf("-> Connecting to '%s' with password '%s'...", ssid.c_str(), password.c_str());
 
         WiFi.begin(ssid.c_str(), password.c_str());
         delay(100);
@@ -194,8 +195,6 @@ void Man::update() {
             delay(50);
         }
 
-        Serial.print("Getting score...");
-
         // Open URL to get points
         http.begin(/*client, */ "http://192.168.4.1/points.html");
 
@@ -208,10 +207,9 @@ void Man::update() {
         } else {
             Serial.printf("ERROR %d\n", httpCode);
         }
-
-        WiFi.disconnect();
     }
     Serial.println("---------------------------------------------------------------");
+    Serial.printf("Updated Score: red = %d, green = %d, blue = %d\n", stats.points[0], stats.points[1], stats.points[2]);
 }
 
 int Man::getPoints(TEAM team) const {
