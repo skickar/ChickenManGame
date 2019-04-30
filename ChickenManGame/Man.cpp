@@ -207,6 +207,8 @@ void Man::update() {
         } else {
             Serial.printf("ERROR %d\n", httpCode);
         }
+
+        WiFi.disconnect();
     }
 }
 
