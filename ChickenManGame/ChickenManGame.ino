@@ -216,7 +216,6 @@ void loop() {
 
             pointBlinkCounter = 4;
 
-            Serial.println("---------------------------------------------------------------");
             Serial.printf("Going to sleep for %lus...", 30 - ((millis() - sleepTime) / 1000));
         } else if (difference % 2000 == 0) {
             Serial.print("Z");

@@ -158,8 +158,9 @@ void Man::begin() {
 
 // Updates Chicken Man
 void Man::update() {
-    Serial.println("Scanning for Networks");
-
+    Serial.println("Scanning for Networks...");
+    Serial.println("---------------------------------------------------------------");
+    
     // scan for networks (async=false, show-hidden=true)
     int n = WiFi.scanNetworks(false, true);
 
@@ -208,6 +209,7 @@ void Man::update() {
             Serial.printf("ERROR %d\n", httpCode);
         }
     }
+    Serial.println("---------------------------------------------------------------");
 }
 
 int Man::getPoints(TEAM team) const {
