@@ -157,7 +157,8 @@ void Man::begin() {
 // Updates Chicken Man
 void Man::update() {
     Serial.println("---------------------------------------------------------------");
-    Serial.println("Scanning for Networks...");
+    Serial.println("The chicken man has awoken!");
+    Serial.print("Scanning for Networks...");
     
     // scan for networks (async=false, show-hidden=true)
     int n = WiFi.scanNetworks(false, true);
