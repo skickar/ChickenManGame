@@ -208,6 +208,8 @@ void Man::update() {
         } else {
             Serial.printf("ERROR %d\n", httpCode);
         }
+        
+        WiFi.disconnect();
     }
     Serial.println("---------------------------------------------------------------");
     Serial.printf("Updated Score: red = %d, green = %d, blue = %d\n", stats.points[0], stats.points[1], stats.points[2]);
