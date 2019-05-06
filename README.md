@@ -21,10 +21,12 @@ The Chicken Man Game
 
 The Chicken Man Wi-Fi hacking game is a WPA/WPA2 cracking game for CTF's and hackerspaces.
 
-The purpose of this game is to have an ultra low-cost microcontroller based Wi-Fi hacking game for beginners. It is designed to be easy to set up, cost less than $50 to play, and requires no deauthing to practice. It has been tested on the D1 mini and NodeMCU. This project was created by Kody Kinzie and Brandon Paiz for the Leadership in Technology club in Pasadena and the Retia team, with much assistance from Stefan "Chicken Man" Kremser. 
+The purpose of this game is to have an ultra low-cost microcontroller based Wi-Fi hacking game for beginners. It is designed to be easy to set up, cost less than $50 to play, and requires no deauthing to practice. It has been tested on the D1 mini and NodeMCU.
 
 ![A glorious flock](
 https://media.giphy.com/media/XErcue5rxXKBdbw6u6/giphy.gif "PCC Hardware Setup")
+
+This project was created by Kody Kinzie and Brandon Paiz for the Leadership in Technology club in Pasadena and the Retia team, with much assistance from Stefan "Chicken Man" Kremser. 
 
 
 ## What you need:
