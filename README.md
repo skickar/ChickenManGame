@@ -3,13 +3,13 @@ The Chicken Man Game
     ,~.
     ,-'__ `-,
     {,-'  `. }              ,')
-    ,( a )   `-.__         ,',')~,   ________         _______   _     __         
-    <=.) (         `-.__,==' ' ' '} /_  __/ /  ___   / ___/ /  (_)___/ /_____ ___     
-    (   )                      /)    / / / _ \/ -_) / /__/ _ \/ / __/  '_/ -_) _ \    
-    `-'\   ,                    )   /_/_/_//_/\__/  \___/_//_/_/\__/_/\_\\__/_//_/    
-     |  \        `~.        /        /  |/  /__ ____    / ___/__ ___ _  ___          
-     \   `._        \      /        / /|_/ / _ `/ _ \  / (_ / _ `/  ' \/ -_)         
-      \     `._____,'    ,'        /_/  /_/\_,_/_//_/  \___/\_,_/_/_/_/\__/          
+    ,( a )   `-.__         ,',')~,      ________         _______   _     __         
+    <=.) (         `-.__,==' ' ' '}    /_  __/ /  ___   / ___/ /  (_)___/ /_____ ___     
+    (   )                      /)       / / / _ \/ -_) / /__/ _ \/ / __/  '_/ -_) _ \    
+    `-'\   ,                    )      /_/_/_//_/\__/  \___/_//_/_/\__/_/\_\\__/_//_/    
+     |  \        `~.        /           /  |/  /__ ____    / ___/__ ___ _  ___          
+     \   `._        \      /           / /|_/ / _ `/ _ \  / (_ / _ `/  ' \/ -_)         
+      \     `._____,'    ,'           /_/  /_/\_,_/_//_/  \___/\_,_/_/_/_/\__/          
        `-.             ,'
           `-._     _,-'
               77jj'
@@ -51,7 +51,7 @@ Your goal is to access the web interface on each Chicken, and set it to your tea
 Your team gets points for every second a Chicken is set to your team color.
 To join the network, you have to find the password. We will be using WPA2 handshake cracking to get the password.
 
-Here is a video walkthrough of playing the game using a Raspberry Pi: https://youtu.be/_Ed8dynd-DA
+Here is a video walkthrough of playing the game using a Raspberry Pi: https://youtu.be/e9W8uEUr4uI
 
 ## The Legend of the Chicken Man:
 
