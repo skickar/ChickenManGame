@@ -121,3 +121,5 @@ Open the serial monitor and set the baud rate to 115200 to watch for errors and 
 5) Connect to the Pi via a terminal window or in a browser with the Secure Shell Google Chrome extension
 6) Download the ChickenDay folder from this repo, and put it on your Raspberry Pi
 
+![Who will be the chicken man?](https://i.imgur.com/AkssX5r.png "WHO WILL BE THE CHICKEN MAN")
+
