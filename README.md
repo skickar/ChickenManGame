@@ -1,72 +1,121 @@
 The Chicken Man Game
 ======
+    ,~.
+    ,-'__ `-,
+    {,-'  `. }              ,')
+    ,( a )   `-.__         ,',')~,   ________         _______   _     __         
+    <=.) (         `-.__,==' ' ' '} /_  __/ /  ___   / ___/ /  (_)___/ /_____ ___     
+    (   )                      /)    / / / _ \/ -_) / /__/ _ \/ / __/  '_/ -_) _ \    
+    `-'\   ,                    )   /_/_/_//_/\__/  \___/_//_/_/\__/_/\_\\__/_//_/    
+     |  \        `~.        /        /  |/  /__ ____    / ___/__ ___ _  ___          
+     \   `._        \      /        / /|_/ / _ `/ _ \  / (_ / _ `/  ' \/ -_)         
+      \     `._____,'    ,'        /_/  /_/\_,_/_//_/  \___/\_,_/_/_/_/\__/          
+       `-.             ,'
+          `-._     _,-'
+              77jj'
+             //_||
+          __//--'/`      
+        ,--'/`  '
+
+## Overview:
+
 The Chicken Man Wi-Fi hacking game is a WPA/WPA2 cracking game for CTF's and hackerspaces.
+
+The purpose of this game is to have an ultra low-cost microcontroller based Wi-Fi hacking game for beginners. It is designed to be easy to set up, cost less than $50 to play, and requires no deauthing to practice. It has been tested on the D1 mini and NodeMCU. This project was created by Kody Kinzie and Brandon Paiz for the Leadership in Technology club in Pasadena and the Retia team, with much assistance from Stefan "Chicken Man" Kremser. 
 
 ![Who will be the chicken man?](https://i.imgur.com/WOdqsh2.jpg "WHO WILL BE THE CHICKEN MAN")
 
-The purpose of this game is to have an ultra low-cost microcontroller based Wi-Fi hacking game for beginners.
-It is designed to be easy to set up, and requires no deauthing to practice. It has been tested on the D1 mini and NodeMCU.
- 
-![Who will be the chicken man?](https://previews.123rf.com/images/lisafx/lisafx0911/lisafx091100075/5918355-chicken-man-holding-stolen-cash-and-running-from-a-police-officer-isolated-on-white-.jpg "WHO WILL BE THE CHICKEN MAN")
 
-## Behavior
+## What you need:
 
-The Chicken Man game consists of two elements, a game piece and a helper. 
+This game requires three elements to play. We need a device to create a Wi-Fi access point, a device to join that Wi-Fi network to generate handshakes, and a device to try cracking the passwords on.
 
-1. The role of the game piece is to create a WPA Wi-Fi access point with a weak password, and host a web interface for players to access. The web interface allows the player to set the LED of the game piece to the color of their team.
-2. The role of the helper is to join the access point created by the game piece. The helper knows the password to the Wi-Fi network the game piece creates, and while connecting to each game piece, will generate WPA handshakes for the player to crack.
+1) We need a device to create a Wi-Fi access point to hack, called a Chicken. For this, we'll use a ESP8266 based device, like the D1 mini or NodeMCU. We'll also need a breadboard, a 330 ohm resistor, and one green, blue, and red LED.
 
-## Required Hardware
+2) We also need a device to join the Chicken's Wi-Fi network to generate handshakes for us to crack and keep track of the score. This is called the Chicken Man. The setup for a Chicken Man is identical as for a Chicken, but includes a wire connecting pin D7 to ground. This converts a Chicken into a Chicken Man.
 
-This game requires three elements to play:
-* An ESP8266 (reccomended D1 mini or NodeMCU) to serve as the game piece and create the access point, with an RGB LED or three single LED's.
-* An ESP8266 to join the network created by the game piece, generating WPA handshakes.
-* A Raspberry Pi or other Linux computer with a wireless network adapter capible of packet capture. 
+3) Finally, we need a device to play the game on! You can use any computer running Kali Linux, including the Raspberry Pi. You will need the Aircrack-ng suite, and a wireless network adapter that supports monitor mode. Want to do it the cheapest and easiest way? This is our setup:
+* ANY computer with the Google Chrome browser and Secure Shell extension.
+* 1 Raspberry Pi running Kali Linux with SSH enabled
+On your computer, connect to the Raspberry Pi in the browser via SSH. You can follow this guide if you need help: https://null-byte.wonderhowto.com/how-to/use-chrome-browser-secure-shell-app-ssh-into-remote-devices-0181892/
 
+## How to play:
 
-## How to play
+![Playing the game](https://i.imgur.com/uXYOqcX.jpg "The Chicken Man Game at PCC!")
 
-* To play, open Wireshark or Airodump-ng and search for the channel the game piece has created an access point on.
-* Begin capturing Wi-Fi traffic from the access point, apply filters to show when 4-way handshake is captured from the helper joining the game piece access point. 
-* Save the captured handshake as a .CAP file, run aircrack-ng or another cracking program against the game password list to brute-force the password to the access point.
-* Try accessing the Wi-Fi access point of the game piece with the cracked password. If it works, scan the network to find the IP address of the game piece webserver
-* Open the game piece webserver in a browser, and (if you are the red team) click the "Red Team" button to turn the LED of the game piece to your team's color.
+After connecting between 1-5 Chickens and at least one Chicken Man, you will see the Chickens appear as WPA2 encrypted Wi-Fi networks that start with “Chicken”.
+Your goal is to access the web interface on each Chicken, and set it to your team’s color.
+Your team gets points for every second a Chicken is set to your team color.
+To join the network, you have to find the password. We will be using WPA2 handshake cracking to get the password.
+
+Here is a video walkthrough of playing the game using a Raspberry Pi: https://youtu.be/_Ed8dynd-DA
+
+## The Legend of the Chicken Man:
+
+To win the game, you need to have the most points at the end of our 45 minute match.
+Your team gets points by cracking the password to a Chicken network and logging in. Once you log in, you can go to 192.168.4.1 in a browser menu to see the Chicken’s menu
 
 ![Who will be the chicken man?](https://i.imgur.com/CWArhK1.jpg "Set your team color!")
 
-* The game piece will set the LED to your team color and shut down the access point. The AP will start up again with a new password, allowing a player from another team to attempt to crack the new password and set the LED flag to their own color.
-* For best results, use several game pieces to keep the game interesting.
+To play, open Wireshark or Airodump-ng and search for the channel the game piece has created an access point on using a wireless network adapter that supports monitor mode.
+Begin capturing Wi-Fi traffic from the access point, apply filters to show when 4-way handshake is captured from the Chicken Man joining the Chicken.
+Save the captured handshake as a .CAP file, run Aircrack-ng or another cracking program against a password list to brute-force the password to the Chicken.
+Try accessing the Wi-Fi access point of the Chicken with the cracked password. If it works, scan the network to find the IP address of the Chicken's webserver (192.168.4.1 by default)
+Open the Chicken's webserver in a browser, and (if you are the red team) click the "Red Team" button to turn the LED of the game piece to your team's color.
 
-## Project Goals
-This project has several goals, broken down into behavior for each game element:
+## The Commands:
 
-#### Game Piece Goals:
-1. The game piece creates a soft access point with a password chosen from a short "game password list."
-2. A 3 color RGB LED (or three LED's) is connected to the output pins, allowing us to flash red, green, blue, or white.
-3. A web interface is started on the game piece, it hosts a web server on port 80 that allows the following commands:
-* Set LED red
-* Set LED green
-* Set LED blue 
-4. The LED is off. When a device joins the access point, an LED flashes white (looks more orange). 
-5. When a device joins the soft AP with the correct password and sets the LED color, two things happen:
-* The LED turns on, set to the color of the team who set the flag. It stays this color unless another team logs in and sets their flag.
-* The game piece shuts down the soft AP, choooses a new password from the game password list, and starts the soft AP again with the new password.
+List network adapters - ifconfig
+Put adapter in monitor mode (changes wlan0 to wlan0mon) - airmon-ng start wlan0
+Watch traffic on all channels (MUST BE IN MONITOR MODE FIRST) - airodump-ng wlan0mon
+Capture handshake on a channel - airodump-ng -w capturefile -c [channel number] wlan0mon
+Crack the handshake - aircrack-ng -w [password list] [capture file].cap
+
+## How Chickens Work:
+
+Each Chicken can be set to easy, medium or hard.
+When you set your team’s color on a Chicken, it creates a new Wi-Fi network with a harder password
+Harder difficulty Chickens have harder passwords, and your team gets more points for hacking them.
+After 45 minutes, count up the score and see which team wins
+
+Set up the game:
+1) Download the .ZIP file or run "git clone https://github.com/skickar/ChickenManGame.git" in a terminal window
+2) Unzip the folder and copy the ChickenDay folder to your Raspberry Pi
+3) Copy the ChickenManGame folder to the Arduino folder on your computer
+4) Install the SimpleCLI library by downloading the ZIP from https://github.com/spacehuhn/SimpleCLI, unzipping it, and dropping the folder in your Arduino library folder
+5) Open the ChickenManGame.INO file in Arduino
+6) If you haven't used an esp8266 before, Click on the "Arduino" drop-down menu, then select "Preferences" and paste "http://arduino.esp8266.com/stable/package_esp8266com_index.json" into the Additional Boards Manager URLs field and Click "OK" to continue.
+7) Click on "Tools," then hover over the "Board" section to see the list of supported boards. At the top, click "Boards Manager" to open the window that will allow us to add more boards. When the Boards Manager window opens, type "esp8266" into the search bar. Select "esp8266" by ESP8266 Community, and install it to add support for the D1 Mini to your Arduino IDE.
+8) Go to the Sketch menu, click Inlcude Library, and go to Manage Libraries. Install the Adafruit NeoPixel library.
+9) Select the "WeMos D1 R2 & mini" board (or NodeMCU if you're using that) and set the IwIP Variant to "1.4 Higher Bandwidth"
+10) Press the green arrow to upload the sketch to your esp8266.
+
+Open the serial monitor and set the baud rate to 115200 to watch for errors and confirm the game is working!
+
+## Hardware Setup:
+
+![A glorious flock](
+https://media.giphy.com/media/XErcue5rxXKBdbw6u6/giphy.gif "PCC Hardware Setup")
 
 
-#### Helper Goals:
-1. The helper starts up and joins the soft AP of any nearby game piece. Doing so creates a WPA handshake for the player to capture.
-2. To join the AP, the helper has a few behaviors. First, you can set the number of game pieces. Becaue the name of the access points is sequencial, (ChickenMan1, ChickenMan2, ChickenMan3), the helper will attempt to join all networks from "ChickenMan1" to the number of game pieces you set. If you set 3 game pieces, the helper will try to join "ChickenMan1, ChickenMan2, and ChickenMan3" access points.
-3. The helper may not know which password from the "game password list" the game piece is using, espeically if a team has set the flag already and causes the device to create a soft AP with a new password. To fix this, we can ask the helper to do the following if the current password isn't right:
-* When joining a game piece, try the first password in the password list. If that password fails, try the next password in the list (up to 15 passwords in the list).
-* When the login succeeds, save the name of the network and the password together, and use that pair to join the game piece AP from now on. If another player logs in and the password is changed again, the process repeats itself when the helper finds the password has changed. 
+Plug the positive pin of a red LED to pin D1, and the negative to a 330 ohm resistor. Connect the other end of the resistor to ground.
+Connect a green LED to pin D2, and a blue LED to pin D3, each with a resistor connecting the negative pin to ground.
+If you're feeling brave, you can connect all three LED's to the same resistor, which is connected to ground.
+If you hate your LED's, connect them directly to ground with no resistor. They will burn out in glory.
+Plug a wire connecting pin D7 to ground to change a Chicken into a Chicken Man.
+
+## Easter egg:
+To create an Uber Chicken Man, connect a neopixel stip to pin D5, and set the value of "const bool NEOPIXEL" to "true" in the hardware.h configuration file. This will make the Chicken Man use the neopixel stip to show who is winning. Also remember to define the number of pixels in the strip.
+
+![Who will be the chicken man?](https://media.giphy.com/media/hQtpKVKeEYXtu4Ji8u/giphy.gif "WHO WILL BE THE CHICKEN MAN")
 
 
-When all is working correctly, the helper joins the AP of each game piece, saving the password associated with each game piece after trying each password stored in the game list. After the helper associates the right password with each network, it goes from network to network, connecting and disconnecting to generate WPA handshakes.
+## Set up the Raspberry Pi:
 
-The game is designed to run for 45 minuties after an explanation and demonstration of how it works.
-
-
-
-
-
+Download the "Kali Linux RPi0w Nexmon" image from: https://www.offensive-security.com/kali-linux-arm-images/
+Insert a micro SD card with at least 8 GB (16 recommended) and use Etcher to flash the image to the disk
+Plug the micro SD card into your Pi and connect it via ethernet to a router
+Connect your computer to the router via Wi-Fi or ethernet and scan for the Pi's IP address
+Connect to the Pi via a terminal window or in a browser with the Secure Shell Google Chrome extension
+Download the ChickenDay folder from this repo, and put it on your Raspberry Pi
 
