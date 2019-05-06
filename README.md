@@ -23,7 +23,8 @@ The Chicken Man Wi-Fi hacking game is a WPA/WPA2 cracking game for CTF's and hac
 
 The purpose of this game is to have an ultra low-cost microcontroller based Wi-Fi hacking game for beginners. It is designed to be easy to set up, cost less than $50 to play, and requires no deauthing to practice. It has been tested on the D1 mini and NodeMCU. This project was created by Kody Kinzie and Brandon Paiz for the Leadership in Technology club in Pasadena and the Retia team, with much assistance from Stefan "Chicken Man" Kremser. 
 
-![Who will be the chicken man?](https://i.imgur.com/WOdqsh2.jpg "WHO WILL BE THE CHICKEN MAN")
+![A glorious flock](
+https://media.giphy.com/media/XErcue5rxXKBdbw6u6/giphy.gif "PCC Hardware Setup")
 
 
 ## What you need:
@@ -94,28 +95,27 @@ Open the serial monitor and set the baud rate to 115200 to watch for errors and 
 
 ## Hardware Setup:
 
-![A glorious flock](
-https://media.giphy.com/media/XErcue5rxXKBdbw6u6/giphy.gif "PCC Hardware Setup")
+![Who will be the chicken man?](https://i.imgur.com/WOdqsh2.jpg "WHO WILL BE THE CHICKEN MAN")
 
 
-Plug the positive pin of a red LED to pin D1, and the negative to a 330 ohm resistor. Connect the other end of the resistor to ground.
-Connect a green LED to pin D2, and a blue LED to pin D3, each with a resistor connecting the negative pin to ground.
-If you're feeling brave, you can connect all three LED's to the same resistor, which is connected to ground.
-If you hate your LED's, connect them directly to ground with no resistor. They will burn out in glory.
-Plug a wire connecting pin D7 to ground to change a Chicken into a Chicken Man.
+1) Plug the positive pin of a red LED to pin D1, and the negative to a 330 ohm resistor. Connect the other end of the resistor to ground.
+2) Connect a green LED to pin D2, and a blue LED to pin D3, each with a resistor connecting the negative pin to ground.
+* If you're feeling brave, you can connect all three LED's to the same resistor, which is connected to ground.
+* If you hate your LED's, connect them directly to ground with no resistor. They will burn out in glory.
+3) Plug a wire connecting pin D7 to ground to change a Chicken into a Chicken Man.
 
 ## Easter egg:
-To create an Uber Chicken Man, connect a neopixel stip to pin D5, and set the value of "const bool NEOPIXEL" to "true" in the hardware.h configuration file. This will make the Chicken Man use the neopixel stip to show who is winning. Also remember to define the number of pixels in the strip.
+* To create an Uber Chicken Man, connect a neopixel stip to pin D5, and set the value of "const bool NEOPIXEL" to "true" in the hardware.h configuration file. This will make the Chicken Man use the neopixel stip to show who is winning. Also remember to define the number of pixels in the strip.
 
 ![Who will be the chicken man?](https://media.giphy.com/media/hQtpKVKeEYXtu4Ji8u/giphy.gif "WHO WILL BE THE CHICKEN MAN")
 
 
 ## Set up the Raspberry Pi:
 
-Download the "Kali Linux RPi0w Nexmon" image from: https://www.offensive-security.com/kali-linux-arm-images/
-Insert a micro SD card with at least 8 GB (16 recommended) and use Etcher to flash the image to the disk
-Plug the micro SD card into your Pi and connect it via ethernet to a router
-Connect your computer to the router via Wi-Fi or ethernet and scan for the Pi's IP address
-Connect to the Pi via a terminal window or in a browser with the Secure Shell Google Chrome extension
-Download the ChickenDay folder from this repo, and put it on your Raspberry Pi
+1) Download the "Kali Linux RPi0w Nexmon" image from: https://www.offensive-security.com/kali-linux-arm-images/
+2) Insert a micro SD card with at least 8 GB (16 recommended) and use Etcher to flash the image to the disk
+3) Plug the micro SD card into your Pi and connect it via ethernet to a router
+4) Connect your computer to the router via Wi-Fi or ethernet and scan for the Pi's IP address
+5) Connect to the Pi via a terminal window or in a browser with the Secure Shell Google Chrome extension
+6) Download the ChickenDay folder from this repo, and put it on your Raspberry Pi
 
