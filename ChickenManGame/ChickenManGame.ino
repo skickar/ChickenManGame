@@ -43,7 +43,7 @@ Command   cmdPoints;
 Command   cmdReset;
 
 int pointBlinkCounter   = 0;
-GAME_TYPE type          = NO_TYPE;
+GAME_TYPE type          = (GAME_TYPE)DEFAULT_CHICKEN;
 unsigned long sleepTime = 0;
 
 // ========== Global Functions ========== //
@@ -139,10 +139,10 @@ void setup() {
     }
 
     // Setup LED(s)
-    led.begin();
+    if (LED_ENABLE) led.begin();
 
     // Setup Switch
-    pinMode(SWITCH_PIN, INPUT_PULLUP);
+    if (SWITCH_ENABLE) pinMode(SWITCH_PIN, INPUT_PULLUP);
 
     // CLI
     cmdFlag = cli.addCommand("flag,color,led");
@@ -153,11 +153,15 @@ void setup() {
     cmdReset = cli.addCommand("reset");
     cmdReset.addArgument("p/assword,pswd");
 
-    // ========== CHICKEN MAN ========== //
-    if (digitalRead(SWITCH_PIN) == LOW) {
-        Serial.println("Mode: Chicken Man");
+    // Set mode based on switch value
+    if (SWITCH_ENABLE) {
+        Serial.println("Reading mode from switch...");
+        type = (digitalRead(SWITCH_PIN) == LOW) ? CHICKEN : CHICKEN_MAN;
+    }
 
-        type = CHICKEN_MAN;
+    // ========== CHICKEN MAN ========== //
+    if (type == CHICKEN_MAN) {
+        Serial.println("Mode: Chicken Man");
 
         // Make sure it's in station mode
         WiFi.mode(WIFI_STA);
@@ -171,10 +175,8 @@ void setup() {
     }
 
     // ========== CHICKEN ========== //
-    else {
+    else if (type == CHICKEN) {
         Serial.println("Mode: Chicken");
-
-        type = CHICKEN;
 
         // Setup Game Access Point
         bird.begin();
@@ -216,7 +218,9 @@ void loop() {
 
             pointBlinkCounter = 4;
 
-            Serial.printf("Going to sleep for %lus...", 30 - ((millis() - sleepTime) / 1000));
+            unsigned long passedTime = ((millis() - sleepTime) / 1000);
+
+            Serial.printf("Going to sleep for %lus...", CHICKEN_MAN_INTERVAL > passedTime ? CHICKEN_MAN_INTERVAL - passedTime : 0);
         } else if (difference % 2000 == 0) {
             Serial.print("Z");
         } else if (difference % 1000 == 0) {

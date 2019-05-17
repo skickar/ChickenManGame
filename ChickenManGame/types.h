@@ -16,9 +16,8 @@ typedef enum LEVEL {
 } LEVEL;
 
 typedef enum GAME_TYPE {
-    NO_TYPE     = 0,
-    CHICKEN     = 1,
-    CHICKEN_MAN = 2
+    CHICKEN     = 0,
+    CHICKEN_MAN = 1
 } GAME_TYPE;
 // ========== Game Stats ========== //
 

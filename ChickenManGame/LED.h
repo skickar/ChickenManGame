@@ -21,6 +21,8 @@ extern const int  NEOPIXEL_BRIGHTNESS;
 
 class LED {
     private:
+        bool enabled = false;
+
         Adafruit_NeoPixel* pixels = NULL;
 
         unsigned long lastBlink = 0;

@@ -4,6 +4,8 @@
 // ========== Hardware ========== //
 
 // [LED]
+// Enabled
+const bool LED_ENABLE = true;
 // D1
 const int LED_PIN_R = 5;
 // D2
@@ -22,6 +24,8 @@ const int NEOPIXEL_NUM = 1;
 const int NEOPIXEL_BRIGHTNESS = 90;
 
 // [Switch]
+// Enabled
+const bool SWITCH_ENABLE = true;
 // D7
 const int SWITCH_PIN = 13;
 

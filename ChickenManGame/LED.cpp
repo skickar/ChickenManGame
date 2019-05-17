@@ -15,10 +15,14 @@ void LED::begin() {
         pinMode(LED_PIN_B, OUTPUT);
     }
 
+    enabled = true;
+
     setColor(1, 1, 1);
 }
 
 void LED::setColor(int r, int g, int b) {
+    if (!enabled) return;
+
     if (NEOPIXEL) {
         ledR = r ? 255 : 0;
         ledG = g ? 255 : 0;

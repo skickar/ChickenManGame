@@ -159,7 +159,7 @@ void Man::update() {
     Serial.println("---------------------------------------------------------------");
     Serial.println("The chicken man has awoken!");
     Serial.print("Scanning for Networks...");
-    
+
     // scan for networks (async=false, show-hidden=true)
     int n = WiFi.scanNetworks(false, true);
 
@@ -185,15 +185,24 @@ void Man::update() {
         WiFiClient client;
         delay(100);
 
-        unsigned long startTime = millis();
+        // Try to connect 5 times
+        for (int j = 0; j<5; j++) {
+            Serial.printf("Connecting [%d]...", j+1);
 
-        // Try to connect for 5s
-        while (WiFi.status() != WL_CONNECTED) {
-            if (millis() - startTime > 5000) {
-                Serial.println("Couldn't connect :(");
-                return;
+            // Try to connect for 2s
+            unsigned long startTime = millis();
+
+            while (WiFi.status() != WL_CONNECTED && millis() - startTime < 2000) {
+                delay(50);
             }
-            delay(50);
+
+            if (WiFi.status() == WL_CONNECTED) {
+                Serial.println("SUCCESS \\o/");
+                break;
+            } else {
+                Serial.println("no luck :(");
+                WiFi.disconnect();
+            }
         }
 
         // Open URL to get points
@@ -208,7 +217,7 @@ void Man::update() {
         } else {
             Serial.printf("ERROR %d\n", httpCode);
         }
-        
+
         WiFi.disconnect();
     }
     Serial.println("---------------------------------------------------------------");

@@ -1,6 +1,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// ========== Device Config ========== //
+// Sets the mode of the device (Chicken or Chicken Man)
+// 0 = Chicken, 1 = Chicken-Man
+// Only used as fallback if the switch (see hardware.h) is disabled
+const int DEFAULT_CHICKEN = 0;
+
 // ========== Game Config ========== //
 
 // Password lists (below) must provide at least that amount!
