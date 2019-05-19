@@ -156,7 +156,7 @@ void setup() {
     // Set mode based on switch value
     if (SWITCH_ENABLE) {
         Serial.println("Reading mode from switch...");
-        type = (digitalRead(SWITCH_PIN) == LOW) ? CHICKEN : CHICKEN_MAN;
+        type = (digitalRead(SWITCH_PIN) == LOW) ? CHICKEN_MAN : CHICKEN;
     }
 
     // ========== CHICKEN MAN ========== //
