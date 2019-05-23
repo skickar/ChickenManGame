@@ -1,6 +1,14 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// ========== Device Config ========== //
+// Sets the mode of the device (Chicken or Chicken Man)
+// 0 = Chicken, 1 = Chicken-Man
+// Only used as fallback if the switch (see hardware.h) is disabled
+const int DEFAULT_CHICKEN = 0;
+const int NEOPIXEL_LED_PIN = D3;
+const int NEOPIXEL_LED_COUNT = 151;
+
 // ========== Game Config ========== //
 
 // Password lists (below) must provide at least that amount!
@@ -134,7 +142,6 @@ const char* HTML_PREFIX PROGMEM =
     "p{color:#fff}"
     "</style>"
     "<a href=\"index.html?cmd=led+red\" class=\"button\" style=\"background-color:#f8333c\">Red Team</a>"
-    "<a href=\"index.html?cmd=led+green\" class=\"button\" style=\"background-color:#44af69\">Green Team</a>"
     "<a href=\"index.html?cmd=led+blue\" class=\"button\" style=\"background-color:#3369ff\">Blue Team</a>"
     "<p>";
 

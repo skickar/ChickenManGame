@@ -28,6 +28,7 @@
 #include "config.h"
 #include "hardware.h"
 #include "types.h"
+#include "NeoPixelCtrl.h"
 
 // ========== Global Variables ========== //
 
@@ -45,6 +46,7 @@ Command   cmdReset;
 int pointBlinkCounter   = 0;
 GAME_TYPE type          = NO_TYPE;
 unsigned long sleepTime = 0;
+chicken_neopixel pixel_strip;
 
 // ========== Global Functions ========== //
 
@@ -228,6 +230,8 @@ void loop() {
             pointBlinkCounter = led.blink(4, man.getFlag(), pointBlinkCounter);
             if (pointBlinkCounter == 0) led.setColor(man.getFlag());
         }
+        pixel_strip.red_blue_score(man.getPoints(TEAM::RED), man.getPoints(TEAM::BLUE));
+		//pixel_strip.win_sequence(1,0);
 
         delay(1);
     }
