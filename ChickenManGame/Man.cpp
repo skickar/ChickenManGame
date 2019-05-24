@@ -116,6 +116,10 @@ void Man::addScore(String payload) {
     else if (stats.points[1] > stats.points[(int)getFlag()]) stats.flag = GREEN;
     else if (stats.points[2] > stats.points[(int)getFlag()]) stats.flag = BLUE;
 
+    if(!stats.time_first_point_scored && (stats.points[0] || stats.points[2])){
+        stats.time_first_point_scored = millis();
+    }
+
     saveStats();
 }
 
@@ -133,6 +137,8 @@ Man::Man() {
     stats.level = EASY;
 
     stats.flag = NO_TEAM;
+
+    stats.time_first_point_scored = 0;
 
     for (int i = 0; i<3; i++) stats.points[i] = 0;
 
@@ -244,4 +250,8 @@ bool Man::resetGame(String password) {
     }
 
     return false;
+}
+
+unsigned int Man::getFirstPointTime(){
+    return stats.time_first_point_scored;
 }

@@ -49,10 +49,11 @@ class Man {
 
         int getPoints(TEAM team) const;
         String getPointsString() const;
-
         TEAM getFlag() const;
 
         bool resetGame(String password);
+        unsigned int getFirstPointTime();
+
 };
 
 

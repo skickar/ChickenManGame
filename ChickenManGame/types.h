@@ -38,6 +38,8 @@ typedef struct game_stats {
 
     unsigned int points[3];      // Red-Points, Green-Points, Blue-Points
 
+    unsigned int time_first_point_scored; // to end the game, eventually
+
     char ssid[33];               // [Chicken] SSID of access point
     char pswd[65];               // [Chicken] Password of access point
 } game_stats;

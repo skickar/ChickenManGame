@@ -46,6 +46,7 @@ Command   cmdReset;
 int pointBlinkCounter   = 0;
 GAME_TYPE type          = NO_TYPE;
 unsigned long sleepTime = 0;
+unsigned long lastWinCheck = 0;
 chicken_neopixel pixel_strip;
 
 // ========== Global Functions ========== //
@@ -219,10 +220,6 @@ void loop() {
             pointBlinkCounter = 4;
 
             Serial.printf("Going to sleep for %lus...", 30 - ((millis() - sleepTime) / 1000));
-        } else if (difference % 2000 == 0) {
-            Serial.print("Z");
-        } else if (difference % 1000 == 0) {
-            Serial.print("z");
         }
 
         // Blink LED(s) when eggs are gathered
@@ -231,6 +228,20 @@ void loop() {
             if (pointBlinkCounter == 0) led.setColor(man.getFlag());
         }
         pixel_strip.red_blue_score(man.getPoints(TEAM::RED), man.getPoints(TEAM::BLUE));
+
+        // win condition
+        if (millis() - lastWinCheck > 10000){
+            lastWinCheck = millis();
+            if (man.getFirstPointTime()){
+                unsigned int time_passed = millis() - man.getFirstPointTime();
+                if(time_passed > TIME_TO_WIN){
+                    pixel_strip.win_sequence(man.getPoints(TEAM::RED), man.getPoints(TEAM::BLUE));
+                }
+                else{
+                    Serial.printf("TIME REMAINING: %lu/%lu\n", time_passed, TIME_TO_WIN);
+                }
+            }
+        }
     }
 
     // ========== CHICKEN ========== //

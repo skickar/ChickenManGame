@@ -40,10 +40,14 @@ class chicken_neopixel {
 
 		// do some cool animation for winning team
 		void win_sequence(int red, int blue){
-			if(red==blue)
+			if(red==blue){
 				meteorRain(255,255,255,10, 64, true, 30);
-			else
+				while (true) RunningLights(0xff,0xff,0xff,50);
+			}
+			else{
 				meteorRain(0,red>blue?255:0,red>blue?0:255,10, 64, true, 30);
+				while(true) RunningLights(0,red>blue?255:0,red>blue?0:255,50);
+			}
 		}
 
 	private:
@@ -96,6 +100,24 @@ class chicken_neopixel {
 		   // FastLED
 		   leds[ledNo].fadeToBlackBy( fadeValue );
 		 #endif
+		}
+		void RunningLights(byte red, byte green, byte blue, int WaveDelay) {
+		  int Position=0;
+
+		  for(int j=0; j<NEOPIXEL_LED_COUNT*2; j++)
+		  {
+			  Position++; // = 0; //Position + Rate;
+			  for(int i=0; i<NEOPIXEL_LED_COUNT; i++) {
+				// sine wave, 3 offset waves make a rainbow!
+				//float level = sin(i+Position) * 127 + 128;
+				//setPixel(i,level,0,0);
+				//float level = sin(i+Position) * 127 + 128;
+				_CHICKEN_STRIP.setPixelColor(i,((sin(i+Position) * 127 + 128)/255)*red,((sin(i+Position) * 127 + 128)/255)*green,((sin(i+Position) * 127 + 128)/255)*blue);
+			  }
+
+			  _CHICKEN_STRIP.show();
+			  delay(WaveDelay);
+		  }
 		}
 
 };

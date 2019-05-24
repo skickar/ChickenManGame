@@ -11,6 +11,9 @@ const int NEOPIXEL_LED_COUNT = 151;
 
 // ========== Game Config ========== //
 
+// time to score points AFTER first flag is set
+const unsigned int TIME_TO_WIN = 600000;
+
 // Password lists (below) must provide at least that amount!
 const unsigned int NUM_PASSWORDS = 15;
 
