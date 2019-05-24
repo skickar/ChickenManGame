@@ -231,9 +231,6 @@ void loop() {
             if (pointBlinkCounter == 0) led.setColor(man.getFlag());
         }
         pixel_strip.red_blue_score(man.getPoints(TEAM::RED), man.getPoints(TEAM::BLUE));
-		//pixel_strip.win_sequence(1,0);
-
-        delay(1);
     }
 
     // ========== CHICKEN ========== //
