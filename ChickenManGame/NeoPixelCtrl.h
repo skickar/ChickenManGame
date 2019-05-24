@@ -15,19 +15,26 @@ class chicken_neopixel {
 				return;
 			setup_done = true;
 			_CHICKEN_STRIP.begin();
+			last_red = NEOPIXEL_LED_COUNT/2;
 		}
 
 		// just shove in the points of each team here
 		void red_blue_score(int red, int blue){
+			unsigned int currentTime = millis();
+			if ((currentTime - lastRedBlueUpdate)<100) return;
+			lastRedBlueUpdate = currentTime;
+
+
 			// figure out how many red lights should be on
 			int num_red = NEOPIXEL_LED_COUNT/2;
-			if(red+blue){
+			if(red+blue)
 				num_red = (red*NEOPIXEL_LED_COUNT)/(red+blue);
-			}
-			
+			if(num_red!=last_red)
+				 last_red += (num_red > last_red ? 1 : -1);
+
 			//turn em on
-			_CHICKEN_STRIP.fill(_CHICKEN_STRIP.Color(0,255,0), 0, num_red);
-			_CHICKEN_STRIP.fill(_CHICKEN_STRIP.Color(0,0,255), num_red);
+			_CHICKEN_STRIP.fill(_CHICKEN_STRIP.Color(0,255,0), 0, last_red);
+			_CHICKEN_STRIP.fill(_CHICKEN_STRIP.Color(0,0,255), last_red);
 			_CHICKEN_STRIP.show();
 		}
 
@@ -40,6 +47,8 @@ class chicken_neopixel {
 		}
 
 	private:
+		int last_red;
+		unsigned long lastRedBlueUpdate;
 		static bool setup_done;
 
 		void meteorRain(byte red, byte green, byte blue, byte meteorSize, byte meteorTrailDecay, boolean meteorRandomDecay, int SpeedDelay) {
