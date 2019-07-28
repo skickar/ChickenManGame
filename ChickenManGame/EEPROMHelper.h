@@ -3,11 +3,11 @@
 #include <EEPROM.h>
 
 namespace eeprom {
-    void begin(const int eepromSize);
+    void begin();
     void end();
 
-    bool checkBootNum(const int address);
-    void resetBootNum(const int address);
+    bool checkBootNum();
+    void resetBootNum();
 
     template<typename T>
     void saveObject(const int address, const T& t) {

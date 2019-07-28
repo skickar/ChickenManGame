@@ -16,7 +16,7 @@
 // ========== Includes ========== //
 
 // [Libraries]
- #include <SimpleCLI.h>
+#include <SimpleCLI.h>
 
 // [Local files]
 #include "Bird.h"
@@ -128,10 +128,10 @@ void setup() {
     randomSeed(os_random());
 
     // Start EEPROM
-    eeprom::begin(EEPROM_SIZE);
+    eeprom::begin();
 
     // If resetted 3 times in a row
-    if (!eeprom::checkBootNum(EEPROM_BOOT_ADDR)) {
+    if (!eeprom::checkBootNum()) {
         // Erase (overwrite) old stats
         game_stats emptyStats;
         eeprom::saveObject(EEPROM_STATS_ADDR, emptyStats);
@@ -190,7 +190,7 @@ void setup() {
     }
 
     // Set boot counter back to 1
-    eeprom::resetBootNum(EEPROM_BOOT_ADDR);
+    eeprom::resetBootNum();
 }
 
 // ========== Loop ========== //

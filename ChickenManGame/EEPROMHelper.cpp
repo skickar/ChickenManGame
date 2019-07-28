@@ -1,6 +1,6 @@
 #include "EEPROMHelper.h"
 
-#define BOOT_MAGIC_NUM 1234567890
+#include "hardware.h"
 
 // Used to verify memory
 typedef struct boot {
@@ -9,28 +9,28 @@ typedef struct boot {
 } boot;
 
 namespace eeprom {
-    void begin(const int eepromSize) {
-        EEPROM.begin(eepromSize);
+    void begin() {
+        EEPROM.begin(EEPROM_SIZE);
     }
 
     void end() {
         EEPROM.end();
     }
 
-    bool checkBootNum(const int address) {
+    bool checkBootNum() {
         boot b;
 
-        EEPROM.get(address, b);
+        EEPROM.get(EEPROM_BOOT_ADDR, b);
 
         if ((b.magic_num == BOOT_MAGIC_NUM) && (b.boot_num < 3)) {
-            saveObject(address, boot{ BOOT_MAGIC_NUM, ++b.boot_num });
+            saveObject(EEPROM_BOOT_ADDR, boot{ BOOT_MAGIC_NUM, ++b.boot_num });
             return true;
         }
 
         return false;
     }
 
-    void resetBootNum(const int address) {
-        saveObject(address, boot{ BOOT_MAGIC_NUM, 1 });
+    void resetBootNum() {
+        saveObject(EEPROM_BOOT_ADDR, boot{ BOOT_MAGIC_NUM, 1 });
     }
 };
