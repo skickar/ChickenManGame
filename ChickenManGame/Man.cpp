@@ -5,14 +5,14 @@
 
 // Save game stats in EEPROM
 void Man::saveStats() {
-    EEPROMHelper::saveObject(EEPROM_STATS_ADDR, stats);
+    eeprom::saveObject(EEPROM_STATS_ADDR, stats);
 }
 
 // Recover game stats from EEPROM
 bool Man::recoverStats() {
     game_stats tmpStats;
 
-    EEPROMHelper::getObject(EEPROM_STATS_ADDR, tmpStats);
+    eeprom::getObject(EEPROM_STATS_ADDR, tmpStats);
 
     // Check if memory valid
     if ((tmpStats.magic_num == GAME_MAGIC_NUM) && (tmpStats.mode == CHICKEN_MAN)) {

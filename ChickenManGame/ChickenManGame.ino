@@ -128,13 +128,13 @@ void setup() {
     randomSeed(os_random());
 
     // Start EEPROM
-    EEPROMHelper::begin(EEPROM_SIZE);
+    eeprom::begin(EEPROM_SIZE);
 
     // If resetted 3 times in a row
-    if (!EEPROMHelper::checkBootNum(EEPROM_BOOT_ADDR)) {
+    if (!eeprom::checkBootNum(EEPROM_BOOT_ADDR)) {
         // Erase (overwrite) old stats
         game_stats emptyStats;
-        EEPROMHelper::saveObject(EEPROM_STATS_ADDR, emptyStats);
+        eeprom::saveObject(EEPROM_STATS_ADDR, emptyStats);
     }
 
     // Setup LED(s)
@@ -190,7 +190,7 @@ void setup() {
     }
 
     // Set boot counter back to 1
-    EEPROMHelper::resetBootNum(EEPROM_BOOT_ADDR);
+    eeprom::resetBootNum(EEPROM_BOOT_ADDR);
 }
 
 // ========== Loop ========== //

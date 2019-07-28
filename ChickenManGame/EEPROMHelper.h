@@ -1,58 +1,23 @@
-#ifndef EEPROMHELPER_H
-#define EEPROMHELPER_H
+#pragma once
 
-// ========== Includes ========== //
 #include <EEPROM.h>
 
-// ========== Boot Counter Structure ========== //
+namespace eeprom {
+    void begin(const int eepromSize);
+    void end();
 
-// Used for memory verificaiton
-#define BOOT_MAGIC_NUM 1234567890
+    bool checkBootNum(const int address);
+    void resetBootNum(const int address);
 
-typedef struct boot {
-    unsigned int magic_num : 32;
-    unsigned int boot_num  : 8;
-} boot;
+    template<typename T>
+    void saveObject(const int address, const T& t) {
+        EEPROM.put(address, t);
 
-// ========== EEPROM Helper Class ========== //
-class EEPROMHelper {
-    public:
-        static void begin(const int eepromSize) {
-            EEPROM.begin(eepromSize);
-        }
+        EEPROM.commit();
+    }
 
-        static void end() {
-            EEPROM.end();
-        }
-
-        template<typename T>
-        static void saveObject(const int address, const T& t) {
-            EEPROM.put(address, t);
-
-            EEPROM.commit();
-        }
-
-        template<typename T>
-        static void getObject(const int address, const T& t) {
-            EEPROM.get(address, t);
-        }
-
-        static bool checkBootNum(const int address) {
-            boot b;
-
-            EEPROM.get(address, b);
-
-            if ((b.magic_num == BOOT_MAGIC_NUM) && (b.boot_num < 3)) {
-                saveObject(address, boot{ BOOT_MAGIC_NUM, ++b.boot_num });
-                return true;
-            }
-
-            return false;
-        }
-
-        static void resetBootNum(const int address) {
-            saveObject(address, boot{ BOOT_MAGIC_NUM, 1 });
-        }
+    template<typename T>
+    void getObject(const int address, const T& t) {
+        EEPROM.get(address, t);
+    }
 };
-
-#endif /* ifndef EEPROMHELPER_H */

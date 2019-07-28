@@ -18,14 +18,14 @@ void Bird::updatePoints() {
 
 // Save game stats in EEPROM
 void Bird::saveStats() {
-    EEPROMHelper::saveObject(EEPROM_STATS_ADDR, stats);
+    eeprom::saveObject(EEPROM_STATS_ADDR, stats);
 }
 
 // Recover game stats from EEPROM
 bool Bird::recoverStats() {
     game_stats tmpStats;
 
-    EEPROMHelper::getObject(EEPROM_STATS_ADDR, tmpStats);
+    eeprom::getObject(EEPROM_STATS_ADDR, tmpStats);
 
     // Check if memory valid
     if ((tmpStats.magic_num == GAME_MAGIC_NUM) && (tmpStats.mode == CHICKEN)) {
