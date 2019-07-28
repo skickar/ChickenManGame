@@ -17,18 +17,14 @@ namespace led {
     int ledB { 0 };
 
 #if defined(LED_ANALOG)
-    int pinR;
-    int pinG;
-    int pinB;
+    int pinR { LED_PIN_R };
+    int pinG { LED_PIN_G };
+    int pinB { LED_PIN_B };
 
-    void begin(const int pinR, const int pinG, const int pinB) {
+    void begin() {
         pinMode(pinR, OUTPUT);
         pinMode(pinG, OUTPUT);
         pinMode(pinB, OUTPUT);
-
-        led::pinR = pinR;
-        led::pinG = pinG;
-        led::pinB = pinB;
 
         enabled = true;
 
@@ -51,9 +47,9 @@ namespace led {
 
     Adafruit_NeoPixel* pixels { nullptr };
 
-    void begin(const int num, const int pin, const int brightness) {
-        pixels = new Adafruit_NeoPixel(num, pin, NEO_GRB + NEO_KHZ800);
-        pixels->setBrightness(brightness);
+    void begin() {
+        pixels = new Adafruit_NeoPixel(NEOPIXEL_NUM, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+        pixels->setBrightness(NEOPIXEL_BRIGHTNESS);
         pixels->begin();
 
         enabled = true;

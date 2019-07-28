@@ -139,11 +139,7 @@ void setup() {
 
     // Setup LED(s)
 #if defined(LED_ENABLE)
-#if defined(LED_ANALOG)
-    led::begin(LED_PIN_R, LED_PIN_G, LED_PIN_B);
-#elif defined(LED_NEOPIXEL)
-    led::begin(NEOPIXEL_NUM, NEOPIXEL_PIN, NEOPIXEL_BRIGHTNESS);
-#endif // ifdef LED_NEOPIXEL
+    led::begin();
 #endif // if defined(LED_ENABLE)
 
     // Setup Switch
