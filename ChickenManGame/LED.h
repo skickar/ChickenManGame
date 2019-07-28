@@ -1,45 +1,17 @@
-#ifndef LED_H
-#define LED_H
-
-// ========== Includes ========== //
-#include <Arduino.h> // digitalWrite, digitalRead
-
-#include <Adafruit_NeoPixel.h>
+#pragma once
 
 #include "types.h"
 
-// From hardware.h
-extern const int  LED_PIN_R;
-extern const int  LED_PIN_G;
-extern const int  LED_PIN_B;
-extern const bool NEOPIXEL;
-extern const int  NEOPIXEL_PIN;
-extern const int  NEOPIXEL_NUM;
-extern const int  NEOPIXEL_BRIGHTNESS;
+#include "hardware.h"
 
-// ========== LED Class ========== //
+namespace led {
+#if defined(LED_ANALOG)
+    void begin(const int pinR, const int pinG, const int pinB);
+#elif defined(LED_NEOPIXEL)
+    void begin(const int num, const int pin, const int brightness);
+#endif // if defined(LED_ANALOG)
 
-class LED {
-    private:
-        bool enabled = false;
-
-        Adafruit_NeoPixel* pixels = NULL;
-
-        unsigned long lastBlink = 0;
-
-        int ledR = 0;
-        int ledG = 0;
-        int ledB = 0;
-
-        bool blinked = false;
-
-    public:
-        ~LED();
-
-        void begin();
-        void setColor(int r, int g, int b);
-        void setColor(TEAM flag);
-        unsigned int blink(unsigned long interval, TEAM flag, unsigned int times = 0);
+    void setColor(const int r, const int g, const int b);
+    void setColor(const TEAM flag);
+    unsigned int blink(const unsigned long interval, const TEAM flag, unsigned int times = 0);
 };
-
-#endif /* ifndef LED_H */

@@ -33,7 +33,6 @@
 
 Bird bird; // Chicken game instance
 Man  man;  // Chicken man
-LED  led;  // LED
 Web  web;  // Web interface
 
 // Command Line Interface
@@ -65,15 +64,15 @@ String handleCLI(String input) {
 
             // Set flags and return a reply string
             if (team.equalsIgnoreCase("blue")) {
-                led.setColor(BLUE);
+                led::setColor(BLUE);
                 bird.setFlag(BLUE);
                 return "Why so blue?";
             } else if (team.equalsIgnoreCase("red")) {
-                led.setColor(RED);
+                led::setColor(RED);
                 bird.setFlag(RED);
                 return "Seeing red?";
             } else if (team.equalsIgnoreCase("green")) {
-                led.setColor(GREEN);
+                led::setColor(GREEN);
                 bird.setFlag(GREEN);
                 return "The others must be green with envy!";
             } else {
@@ -139,7 +138,13 @@ void setup() {
     }
 
     // Setup LED(s)
-    if (LED_ENABLE) led.begin();
+#if defined(LED_ENABLE)
+#if defined(LED_ANALOG)
+    led::begin(LED_PIN_R, LED_PIN_G, LED_PIN_B);
+#elif defined(LED_NEOPIXEL)
+    led::begin(NEOPIXEL_NUM, NEOPIXEL_PIN, NEOPIXEL_BRIGHTNESS);
+#endif // ifdef LED_NEOPIXEL
+#endif // if defined(LED_ENABLE)
 
     // Setup Switch
     if (SWITCH_ENABLE) pinMode(SWITCH_PIN, INPUT_PULLUP);
@@ -171,7 +176,7 @@ void setup() {
         man.begin();
 
         // Set flag color
-        led.setColor(man.getFlag());
+        led::setColor(man.getFlag());
     }
 
     // ========== CHICKEN ========== //
@@ -185,7 +190,7 @@ void setup() {
         web.begin();
 
         // Set flag color
-        led.setColor(bird.getFlag());
+        led::setColor(bird.getFlag());
     }
 
     // Set boot counter back to 1
@@ -229,8 +234,8 @@ void loop() {
 
         // Blink LED(s) when eggs are gathered
         if (pointBlinkCounter) {
-            pointBlinkCounter = led.blink(4, man.getFlag(), pointBlinkCounter);
-            if (pointBlinkCounter == 0) led.setColor(man.getFlag());
+            pointBlinkCounter = led::blink(4, man.getFlag(), pointBlinkCounter);
+            if (pointBlinkCounter == 0) led::setColor(man.getFlag());
         }
 
         delay(1);
@@ -243,7 +248,7 @@ void loop() {
             unsigned long startTime = millis();
 
             while (millis() - startTime >= 5000) {
-                led.blink(10, NO_TEAM);
+                led::blink(10, NO_TEAM);
             }
 
             ESP.restart();
@@ -257,8 +262,8 @@ void loop() {
 
         // Blink LED(s) when eggs are gathered
         if (pointBlinkCounter) {
-            pointBlinkCounter = led.blink(4, bird.getFlag(), pointBlinkCounter);
-            if (pointBlinkCounter == 0) led.setColor(bird.getFlag());
+            pointBlinkCounter = led::blink(4, bird.getFlag(), pointBlinkCounter);
+            if (pointBlinkCounter == 0) led::setColor(bird.getFlag());
         }
     }
 }

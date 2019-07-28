@@ -9,6 +9,7 @@
 
 #include "EEPROMHelper.h"
 #include "types.h"             // TEAM, LEVEL enums
+#include "hardware.h"          // EEPROM_STATS_ADDR
 
 // From config.h
 extern const unsigned int NUM_PASSWORDS;
@@ -19,9 +20,6 @@ extern const char* SSID_SUFFIX[] PROGMEM;
 extern const char* EASY_PSWD[] PROGMEM;
 extern const char* MEDIUM_PSWD[] PROGMEM;
 extern const char* HARD_PSWD[];
-
-// From hardware.h
-extern const int EEPROM_STATS_ADDR;
 
 // ========== Man Class ========== //
 
