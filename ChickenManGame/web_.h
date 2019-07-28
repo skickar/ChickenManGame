@@ -1,7 +1,4 @@
-#ifndef WEB_H
-#define WEB_H
-
-// ========== Includes ========== //
+#pragma once
 
 // [ESP8266 Libraries]
  #include <ESP8266WebServer.h>
@@ -14,12 +11,7 @@ extern String handleCLI(String input);
 extern const char* HTML_PREFIX PROGMEM;
 extern const char* HTML_SUFFIX PROGMEM;
 
-// ========== Web Class ========== //
-
-class Web {
-    public:
-        void begin();
-        void update();
+namespace web {
+    void begin();
+    void update();
 };
-
-#endif /* ifndef WEB_H */
