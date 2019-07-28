@@ -1,4 +1,4 @@
-#include "EEPROMHelper.h"
+#include "eeprom.h"
 
 #include "hardware.h"
 

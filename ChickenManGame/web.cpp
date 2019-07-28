@@ -56,7 +56,7 @@ namespace web {
     }
 
     // ========== Public ========== //
-    void Web::begin() {
+    void begin() {
         // DNS
         MDNS.begin("Chicken");
 
@@ -69,7 +69,7 @@ namespace web {
         webServer.begin();
     }
 
-    void Web::update() {
+    void update() {
         MDNS.update();
         webServer.handleClient();
     }

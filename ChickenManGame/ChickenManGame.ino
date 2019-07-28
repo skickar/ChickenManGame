@@ -22,8 +22,8 @@
 #include "Bird.h"
 #include "Man.h"
 #include "LED.h"
-#include "Web.h"
-#include "EEPROMHelper.h"
+#include "web.h"
+#include "eeprom.h"
 
 #include "config.h"
 #include "hardware.h"
@@ -33,7 +33,6 @@
 
 Bird bird; // Chicken game instance
 Man  man;  // Chicken man
-Web  web;  // Web interface
 
 // Command Line Interface
 SimpleCLI cli;
@@ -183,7 +182,7 @@ void setup() {
         bird.begin();
 
         // Start web interface
-        web.begin();
+        web::begin();
 
         // Set flag color
         led::setColor(bird.getFlag());
@@ -221,7 +220,9 @@ void loop() {
 
             unsigned long passedTime = ((millis() - sleepTime) / 1000);
 
-            Serial.printf("Going to sleep for %lus...", CHICKEN_MAN_INTERVAL > passedTime ? CHICKEN_MAN_INTERVAL - passedTime : 0);
+            Serial.printf("Going to sleep for %lus...",
+                          (CHICKEN_MAN_INTERVAL > passedTime) ?
+                          CHICKEN_MAN_INTERVAL - passedTime : 0);
         } else if (difference % 2000 == 0) {
             Serial.print("Z");
         } else if (difference % 1000 == 0) {
@@ -251,7 +252,7 @@ void loop() {
         }
 
         // Web server
-        web.update();
+        web::update();
 
         // Update game (access point, server, ...)
         bird.update();

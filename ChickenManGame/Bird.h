@@ -4,7 +4,7 @@
 #include <Arduino.h>     // String Class
 #include <ESP8266WiFi.h> // Scan WiFi
 
-#include "EEPROMHelper.h"
+#include "eeprom.h"
 #include "types.h"       // TEAM, LEVEL enums
 #include "hardware.h"    // EEPROM_STATS_ADDR
 

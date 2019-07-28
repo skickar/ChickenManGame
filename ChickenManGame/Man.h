@@ -7,7 +7,7 @@
 #include <ESP8266WiFi.h>       // Scan WiFi
 #include <ESP8266HTTPClient.h> // HTTPClient
 
-#include "EEPROMHelper.h"
+#include "eeprom.h"
 #include "types.h"             // TEAM, LEVEL enums
 #include "hardware.h"          // EEPROM_STATS_ADDR
 
