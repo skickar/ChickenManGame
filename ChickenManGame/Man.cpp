@@ -203,7 +203,7 @@ void Man::update() {
         }
 
         // Open URL to get points
-        http.begin(/*client, */ "http://192.168.4.1/points.html");
+        http.begin(client, "http://192.168.4.1/points.html");
 
         int httpCode   = http.GET();
         String payload = http.getString();
