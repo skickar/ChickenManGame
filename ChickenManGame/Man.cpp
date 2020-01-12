@@ -192,7 +192,7 @@ void Man::update() {
             // Try to connect for 2s
             unsigned long startTime = millis();
 
-            while (WiFi.status() != WL_CONNECTED && millis() - startTime < 2000) {
+            while (WiFi.status() != WL_CONNECTED && millis() - startTime < 5000) {
                 delay(50);
             }
 
@@ -206,7 +206,7 @@ void Man::update() {
         }
 
         // Open URL to get points
-        http.begin(/*client, */ "http://192.168.4.1/points.html");
+        http.begin(client, "http://192.168.4.1/points.html");
 
         int httpCode   = http.GET();
         String payload = http.getString();
