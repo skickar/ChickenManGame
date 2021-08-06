@@ -214,7 +214,9 @@ void loop() {
 
             Serial.println();
 
+            cli.pause();
             man.update();
+            cli.unpause();
 
             pointBlinkCounter = 4;
 
