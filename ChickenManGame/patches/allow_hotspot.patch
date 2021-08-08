@@ -1,0 +1,14 @@
+diff --git a/ChickenManGame/Man.cpp b/ChickenManGame/Man.cpp
+index 37fb58d..b287e00 100644
+--- a/ChickenManGame/Man.cpp
++++ b/ChickenManGame/Man.cpp
+@@ -31,7 +31,8 @@ bool Man::isAChicken(uint8_t* bssid) const {
+ }
+ 
+ bool Man::isAChicken(String ssid, uint8_t* bssid) const {
+-    if (!isAChicken(bssid)) return false;
++    //if (!isAChicken(bssid)) return false;
++    return ssid[0]=='C';
+ 
+     unsigned int level = bssid[4];
+     unsigned int id    = bssid[5];

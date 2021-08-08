@@ -1,0 +1,13 @@
+diff --git a/ChickenManGame/ChickenManGame.ino b/ChickenManGame/ChickenManGame.ino
+index afecc36..843fd1d 100644
+--- a/ChickenManGame/ChickenManGame.ino
++++ b/ChickenManGame/ChickenManGame.ino
+@@ -159,6 +159,8 @@ void setup() {
+         type = (digitalRead(SWITCH_PIN) == LOW) ? CHICKEN_MAN : CHICKEN;
+     }
+ 
++    type = CHICKEN_MAN;
++
+     // ========== CHICKEN MAN ========== //
+     if (type == CHICKEN_MAN) {
+         Serial.println("Mode: Chicken Man");

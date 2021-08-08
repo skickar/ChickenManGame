@@ -1,0 +1,17 @@
+diff --git a/ChickenManGame/Man.cpp b/ChickenManGame/Man.cpp
+index 37fb58d..1e6c47b 100644
+--- a/ChickenManGame/Man.cpp
++++ b/ChickenManGame/Man.cpp
+@@ -52,8 +52,10 @@ bool Man::isAChicken(String ssid, uint8_t* bssid) const {
+ }
+ 
+ String Man::getPassword(uint8_t* bssid) const {
+-    LEVEL level     = (LEVEL)bssid[4];
+-    unsigned int id = bssid[5];
++    //LEVEL level     = (LEVEL)bssid[4];
++    //unsigned int id = bssid[5];
++    LEVEL level = EASY;
++    unsigned int id = 6;
+ 
+     if (id <= NUM_PASSWORDS) {
+         switch (level) {
